@@ -1,0 +1,22 @@
+# Proprietary SDK supplied separately by the user.
+/MetaTrader5SDK.exe
+/vendor/mt4-sdk/
+/vendor/mt5-sdk/
+/vendor/mt4-manager-sdk/
+/vendor/mt5-manager-sdk/
+
+# Build output and local runtime state.
+/build/
+/build-windows/
+/out/
+/runtime/
+/.vs/
+*.user
+*.suo
+
+# Machine-specific configuration and credentials.
+/config/*.local.json
+.env
+.env.*
+
+.DS_Store

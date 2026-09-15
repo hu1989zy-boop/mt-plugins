@@ -1,0 +1,7 @@
+{
+  "status": "deferred_historical_scope",
+  "platform": "mt4",
+  "enabled": false,
+  "loadable_configuration": false,
+  "note": "MT4 is deferred. The current specification is MT5 Server API DLL with a standalone Windows management UI."
+}

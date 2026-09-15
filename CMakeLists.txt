@@ -1,0 +1,62 @@
+cmake_minimum_required(VERSION 3.21)
+project(mt5_trade_copier VERSION 0.2.0 LANGUAGES CXX)
+
+# Match the supplied Server API sample's /MT (/MTd for Debug) runtime.
+# Keep this consistent across the UI and the static libraries it consumes.
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+option(TRADECOPIER_BUILD_WINDOWS_UI "Build the offline native Windows editor" ${WIN32})
+option(TRADECOPIER_BUILD_SDK_PROBE "Build the read-only Server API loading/event probe" OFF)
+set(MT5_SERVER_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/mt5-sdk" CACHE PATH
+    "Supplied MT5 SDK root containing Include/MT5APIServer.h")
+
+add_library(tradecopier_core STATIC core/src/core.cpp)
+target_include_directories(tradecopier_core PUBLIC core/include)
+target_compile_features(tradecopier_core PUBLIC cxx_std_17)
+set_target_properties(tradecopier_core PROPERTIES CXX_EXTENSIONS OFF)
+
+if(MSVC)
+  target_compile_options(tradecopier_core PRIVATE /W4 /permissive- /utf-8)
+else()
+  target_compile_options(tradecopier_core PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+include(CTest)
+if(BUILD_TESTING)
+  add_executable(tradecopier_core_tests tests/core_tests.cpp)
+  target_link_libraries(tradecopier_core_tests PRIVATE tradecopier_core)
+  if(MSVC)
+    target_compile_options(tradecopier_core_tests PRIVATE /W4 /permissive- /utf-8)
+  else()
+    target_compile_options(tradecopier_core_tests PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME tradecopier_core_tests COMMAND tradecopier_core_tests)
+endif()
+
+add_library(tradecopier_config STATIC core/src/config.cpp)
+target_link_libraries(tradecopier_config PUBLIC tradecopier_core)
+target_compile_features(tradecopier_config PUBLIC cxx_std_17)
+set_target_properties(tradecopier_config PROPERTIES CXX_EXTENSIONS OFF)
+if(MSVC)
+  target_compile_options(tradecopier_config PRIVATE /W4 /permissive- /utf-8)
+else()
+  target_compile_options(tradecopier_config PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+if(BUILD_TESTING)
+  add_executable(tradecopier_config_tests tests/config_tests.cpp)
+  target_link_libraries(tradecopier_config_tests PRIVATE tradecopier_config)
+  if(MSVC)
+    target_compile_options(tradecopier_config_tests PRIVATE /W4 /permissive- /utf-8)
+  else()
+    target_compile_options(tradecopier_config_tests PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME tradecopier_config_tests COMMAND tradecopier_config_tests
+           "${CMAKE_CURRENT_SOURCE_DIR}/config/copier.example.json")
+endif()
+
+if(TRADECOPIER_BUILD_WINDOWS_UI)
+  add_subdirectory(windows)
+endif()
+if(TRADECOPIER_BUILD_SDK_PROBE)
+  add_subdirectory(server)
+endif()
