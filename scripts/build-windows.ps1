@@ -5,7 +5,8 @@
 param(
     [string]$SdkRoot = '',
     [string]$BuildDirectory = '',
-    [switch]$UiOnly
+    [switch]$UiOnly,
+    [switch]$Executor
 )
 
 Set-StrictMode -Version Latest
@@ -120,6 +121,7 @@ function Assert-CompatibleCache {
 }
 
 try {
+    if ($UiOnly -and $Executor) { throw '-UiOnly and -Executor cannot be combined.' }
     $buildRoot = Normalize-Directory $buildRoot
     $cmake = (Get-Command cmake.exe -ErrorAction Stop).Source
     $ctest = Join-Path (Split-Path -Parent $cmake) 'ctest.exe'
@@ -142,6 +144,7 @@ try {
                    '-G', $buildEnvironment.Generator, '-A', 'x64', '-T', $buildEnvironment.Toolset,
                    "-DCMAKE_GENERATOR_INSTANCE=$($buildEnvironment.Instance)",
                    '-DBUILD_TESTING=ON', '-DTRADECOPIER_BUILD_WINDOWS_UI=ON')
+    $configure += ('-DTRADECOPIER_BUILD_EXECUTOR=' + $(if ($Executor) { 'ON' } else { 'OFF' }))
     if ($UiOnly) {
         $configure += '-DTRADECOPIER_BUILD_SDK_PROBE=OFF'
     } else {
@@ -169,6 +172,9 @@ try {
     if (-not (Test-Path -LiteralPath $managerExe -PathType Leaf)) { throw 'Editor executable was not produced.' }
     $probeDll = Join-Path $buildRoot 'server\Release\TradeCopierSdkProbe.dll'
     $exportsVerified = $false
+    $executorExportsVerified = $false
+    $executorDll = Join-Path $buildRoot 'server\Release\TradeCopierExecutor.dll'
+    $journalExe = Join-Path $buildRoot 'Release\TradeCopierJournal.exe'
     if (-not $UiOnly) {
         if (-not (Test-Path -LiteralPath $probeDll -PathType Leaf)) { throw 'Probe DLL was not produced.' }
         $dumpbin = (Get-Command dumpbin.exe -ErrorAction Stop).Source
@@ -180,9 +186,21 @@ try {
             }
         }
         $exportsVerified = $true
+        if ($Executor) {
+            if (-not (Test-Path -LiteralPath $executorDll -PathType Leaf)) { throw 'Executor DLL was not produced.' }
+            if (-not (Test-Path -LiteralPath $journalExe -PathType Leaf)) { throw 'Journal inspector was not produced.' }
+            $executorExports = Get-NativeText $dumpbin @('/nologo', '/exports', $executorDll)
+            $executorExports | Out-File -LiteralPath (Join-Path $buildRoot 'executor-exports.txt') -Encoding UTF8
+            foreach ($entry in @('MTServerAbout', 'MTServerCreate')) {
+                if ($executorExports -notmatch "(?m)\s$entry\s*(?:=.+)?$") {
+                    throw "Required executor DLL export missing: $entry"
+                }
+            }
+            $executorExportsVerified = $true
+        }
     }
 
-    $packageName = if ($UiOnly) { 'package-ui' } else { 'package-probe' }
+    $packageName = if ($Executor) { 'package-executor' } elseif ($UiOnly) { 'package-ui' } else { 'package-probe' }
     $packageRoot = Join-Path $buildRoot $packageName
     New-Item -ItemType Directory -Force -Path $packageRoot | Out-Null
     $manifestPath = Join-Path $packageRoot 'build-manifest.json'
@@ -193,6 +211,32 @@ try {
     if (-not $UiOnly) {
         Copy-Item -LiteralPath $probeDll -Destination (Join-Path $packageRoot 'TradeCopierSdkProbe.dll') -Force
     }
+    if ($Executor) {
+        Copy-Item -LiteralPath $executorDll -Destination (Join-Path $packageRoot 'TradeCopierExecutor.dll') -Force
+        Copy-Item -LiteralPath $journalExe -Destination (Join-Path $packageRoot 'TradeCopierJournal.exe') -Force
+        Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\executor-demo-validation.md') -Destination $packageRoot -Force
+    }
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\management-ui.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\manager-mt-ui.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\manager-refresh-fix.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\config-with-open-positions.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\frozen-opening-rules.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\account-pipeline.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\journal-rotation.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\live-state-journal.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\ten-thousand-capacity.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\windows-checkpoint-fix.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\pretrade-rejection-0.5.4.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\routine-no-money-0.5.5.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\latency-300-0.6.1.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\subscription-restart-0.6.2.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\live-subscriptions-0.6.0.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\execution-isolation-0.5.3.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\legacy-review-cleanup-0.5.2.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\throughput-0.5.1.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\throughput-0.5.1-results.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\symbol-routing.md') -Destination $packageRoot -Force
+    Copy-Item -LiteralPath (Join-Path $projectRoot 'config\copier.symbol-routing.example.json') -Destination $packageRoot -Force
     Copy-Item -LiteralPath (Join-Path $projectRoot 'config\copier.example.json') -Destination $packageRoot -Force
     Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\windows-test-deployment.md') -Destination $packageRoot -Force
     Copy-Item -LiteralPath (Join-Path $projectRoot 'windows\README.md') -Destination (Join-Path $packageRoot 'editor-readme.md') -Force
@@ -202,6 +246,7 @@ try {
     $artifacts = @()
     $artifactNames = @('TradeCopierManager.exe')
     if (-not $UiOnly) { $artifactNames += 'TradeCopierSdkProbe.dll' }
+    if ($Executor) { $artifactNames += @('TradeCopierExecutor.dll', 'TradeCopierJournal.exe') }
     foreach ($name in $artifactNames) {
         $artifactPath = Join-Path $packageRoot $name
         $artifacts += [ordered]@{
@@ -213,26 +258,71 @@ try {
     $manifest = [ordered]@{
         schema_version = 1
         built_at_utc = [DateTime]::UtcNow.ToString('o')
-        source_version = '0.2.0'
-        purpose = 'offline_configuration_and_read_only_sdk_probe'
-        can_copy_trades = $false
-        build_script_revision = 2
+        source_version = '0.6.2'
+        purpose = $(if ($Executor) { 'server_api_6182_trade_execution_validation' } elseif ($UiOnly) { 'local_configuration_and_management_client' } else { 'local_management_client_and_read_only_probe' })
+        can_copy_trades = [bool]$Executor
+        trading_enabled_by_default = $false
+        build_script_revision = 22
+        manager_ui_revision = 'mt-live-subscription-exits-20260918'
+        executor_pretrade_no_money_callback = [bool]$Executor
+        executor_settled_no_money_retirement = [bool]$Executor
+        executor_minimum_opening_retirement = [bool]$Executor
+        executor_sibling_close_priority = [bool]$Executor
+        executor_reconcile_mapping_isolation = [bool]$Executor
+        executor_automatic_global_halt = $false
+        executor_live_subscriptions = [bool]$Executor
+        management_protocol_version = 2
+        subscription_restart_queue_rebase = $true
+        executor_active_mapping_config_apply = [bool]$Executor
+        executor_legacy_unsubmitted_review_cleanup = [bool]$Executor
+        executor_cleanup_preserves_pause_and_request_ids = $true
+        executor_frozen_opening_rules = [bool]$Executor
+        executor_account_pipeline = [bool]$Executor
+        executor_max_in_flight = 512
+        executor_per_account_in_flight = 8
+        journal_delta_frame = 4
+        journal_max_appended_records = 256
+        journal_schema_version = 6
+        journal_checkpoint_frame_version = 2
+        journal_windows_publication = 'close_data_handles_replace_reopen_verify'
+        journal_rotation_bytes = 67108864
+        journal_snapshot_limit_bytes = 33554432
+        journal_closed_history_retained = $false
+        journal_automatic_archives = $false
+        executor_opening_mapping_limit = 10000
+        journal_opening_snapshot_reserve_bytes = 16777216
+        journal_opening_mapping_reserve_bytes = 8192
+        journal_opening_disk_reserve_bytes = 268435456
+        minimum_journal_reader = '0.6.0_for_subscription_barriers_and_exits'
+        config_symbol_schema_version = 3
+        executor_symbol_masks = [bool]$Executor
+        executor_automatic_symbol_suffixes = [bool]$Executor
         compiler_target = $selection
         visual_studio_instance = $buildEnvironment.Instance
         cmake_version = $capabilities.version.string
         sdk_server_api = $apiVersion
         sdk_header_sha256 = $headerHash
         unit_tests_passed = $true
+        capacity_soak_test_run = $false
+        paced_ten_account_stress_run = $false
         probe_exports_verified = $exportsVerified
+        executor_exports_verified = $executorExportsVerified
+        management_enabled_by_default = $false
+        management_demo_verified = $false
         windows_ui_run_verified = $false
         mt5_loading_verified = $false
+        mt5_executor_execution_verified = $false
         artifacts = $artifacts
     }
     $manifest | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
     Write-Host ''
     Write-Host "Build and tests passed. Local artifacts: $packageRoot"
-    Write-Host 'This package does not copy trades. No MT5 service or account was changed.'
-    Write-Host 'Next: follow docs/windows-test-deployment.md for the manual test-server loading check.'
+    if ($Executor) {
+        Write-Host 'Executor built with Armed=0 by default. Follow docs/executor-demo-validation.md for Demo validation.'
+    } else {
+        Write-Host 'This package does not copy trades. Follow docs/windows-test-deployment.md for the probe loading check.'
+    }
+    Write-Host 'No MT5 service or account was changed by this build.'
 } catch {
     $_ | Out-String | Add-Content -LiteralPath $buildLog -Encoding UTF8
     Write-Error $_ -ErrorAction Continue

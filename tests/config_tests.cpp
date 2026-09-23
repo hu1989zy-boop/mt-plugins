@@ -1,4 +1,6 @@
 #include "tradecopier/config.hpp"
+#include "tradecopier/symbols.hpp"
+#include <cmath>
 
 #include <cstdlib>
 #include <fstream>
@@ -259,11 +261,73 @@ void RelationValidationTests() {
     Reject(text, "1001 imported relationships rejected even when all IDs and pairs are unique");
 }
 
+void SymbolTests() {
+    for (const auto& item:std::vector<std::pair<std::string,std::string>>{
+        {"*","XAUUSDp"},{"XAUUSD*","XAUUSD.p"},{"*USD*","EURUSD"},{"X*U*D*","XAUUSDp"},
+        {"XAUUSD.p","XAUUSD.p"},{" EUR*, XAU* , !EURJPY* ","XAUUSDp"},{"*,!*JPY*","EURUSD"},
+        {"*,!!EUR*","XAUUSD"},{",,*, ,","BTCUSD"},{"XAUUSD*","XAUUSD"}})
+        Check(SymbolMask(item.first).Matches(item.second),"MetaQuotes literal/star/list mask includes expected symbol");
+    for (const auto& item:std::vector<std::pair<std::string,std::string>>{
+        {"XAUUSD","XAUUSDp"},{"XAUUSD.p","XAUUSDxp"},{"xau*","XAUUSD"},
+        {"*,!XAU*","XAUUSDp"},{"!XAU*,*","XAUUSDp"},{"XAU*,EUR*","BTCUSD"},{"X*D","XAUUSDp"}})
+        Check(!SymbolMask(item.first).Matches(item.second),"exact names, case and exclusions are respected");
+    Check(SymbolMask("EUR?").Matches("EUR?") && !SymbolMask("EUR?").Matches("EURp"), "question mark is a literal as in the SDK helper, not PCRE");
+    std::string error;
+    for (const auto* mask:{"",",,","!EUR*","*,!","EUR\nUSD"})
+        Check(!ValidateSymbolRule(mask,"",error) && !error.empty(),"invalid or unsupported mask has a clear error");
+    Check(!ValidateSymbolRule(std::string(256,'x'),"",error),"mask term length bounded like SDK helper");
+    Check(!ValidateSymbolRule("*","*p",error),"suffix is exact text, not a mask");
+    SymbolSpec source; source.name="XAUUSDp"; source.currency_base="XAU"; source.currency_profit="USD";
+    source.currency_margin="USD"; source.contract_size=100; source.digits=2; source.buy=source.sell=true;
+    auto dot=source; dot.name="XAUUSD.p";
+    Check(SourceBaseSymbol(source,"")=="XAUUSD" && SourceBaseSymbol(dot,"")=="XAUUSD", "currency metadata identifies base across p and .p suffixes");
+    Check(ResolveTargetSymbol(source,{dot},true,"",true).symbol==dot.name,"unique tradable .p maps automatically");
+    Check(ResolveTargetSymbol(dot,{source},true,"",false).symbol==source.name,"reverse suffix mapping works for sells");
+    Check(ResolveTargetSymbol(source,{source,dot},true,"",true).symbol.empty(),"exact-name candidate never wins an ambiguous automatic match");
+    Check(ResolveTargetSymbol(source,{source,dot},true,"",true).error.find("冲突")!=std::string::npos,"ambiguity gives a conflict message");
+    Check(ResolveTargetSymbol(source,{source,dot},false,"",true).symbol==source.name,"legacy exact-name policy stays exact");
+    auto disabled=source; disabled.buy=false;
+    Check(ResolveTargetSymbol(source,{disabled,dot},true,"",true).symbol==dot.name,"unavailable side excluded from candidate set");
+    Check(!ResolveTargetSymbol(source,{disabled,dot},true,"",false).error.empty(),"side permissions checked separately");
+    Check(!ResolveTargetSymbol(source,{},true,"",true).error.empty(),"no candidate is explicit, never a guessed symbol");
+    for (unsigned n=0;n<10;++n) {
+        auto other=dot;
+        switch(n) {
+        case 0:other.contract_size=1;break; case 1:other.calc_mode=1;break; case 2:other.digits=3;break;
+        case 3:other.currency_profit="EUR";break; case 4:other.isin="OTHER";break;
+        case 5:other.expiration=100;break; case 6:other.options_mode=1;break;
+        case 7:other.strike=100;break; case 8:other.face_value=100;break; case 9:other.basis="OTHER";break;
+        }
+        Check(ResolveTargetSymbol(source,{other},true,"",true).symbol.empty(),"different effective contracts or instrument identities cannot be copied");
+    }
+    auto index=source; index.name="US30p"; index.currency_base=index.currency_profit="USD";
+    auto target=index; target.name="US30.p";
+    Check(ResolveTargetSymbol(index,{target},true,"",true).symbol.empty(),"missing non-FX base metadata does not guess a source suffix");
+    Check(ResolveTargetSymbol(index,{target},true,"p",true).symbol==target.name,"explicit source suffix supports non-FX bases");
+    index.basis="US30";
+    Check(ResolveTargetSymbol(index,{target},true,"",true).symbol==target.name,"SDK basic symbol metadata supports indices");
+    Check(!ResolveTargetSymbol(source,{dot},true,".p",true).error.empty(),"incorrect exact source suffix blocks the mapping");
+    auto config=Example(); config.relationships[0].auto_symbol=true;
+    config.relationships[0].symbol_mask="*,!EUR*"; config.relationships[0].source_suffix="p";
+    const auto json=WriteConfigJson(config); CopierConfig loaded;
+    Check(json.find("\"schema_version\": 3")!=std::string::npos && ParseConfigJson(json,loaded,error),"symbol configuration uses schema 3 and imports");
+    Check(WriteConfigJson(loaded)==json && loaded.relationships[0].auto_symbol && loaded.relationships[0].source_suffix=="p", "symbol routing settings roundtrip without changing defaults in other rules");
+    Reject(Replace(json,"\"schema_version\": 3","\"schema_version\": 2"),"new symbol fields cannot be silently read as old schema");
+    Reject(Replace(json,"\"auto_symbol\": true","\"auto_symbol\": \"true\""),"automatic selection is a strict boolean");
+    Reject(Replace(json,"*,!EUR*","!*"),"invalid mask rejected by JSON import");
+    for (auto& r:config.relationships) r.symbol_mask="*";
+    Check(ValidateConfig(config,error),"automatic matching does not impose a gold-only restriction");
+    Check(StableExecutorIdentity("server=1;api=6182;app=3101;symbol=XAUUSDp")=="server=1;api=6182;app=3101", "legacy symbol filter is not the server identity");
+    Check(StableExecutorIdentity("server=2;api=6182;app=3101;symbol=*")!="server=1;api=6182;app=3101", "server identity remains mandatory");
+    Check(StableExecutorIdentity("test;symbol=*")=="test;symbol=*", "arbitrary identities are not rewritten");
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
     RoundTripTests(argc > 1 ? argv[1] : "");
     PolicyTests();
+    SymbolTests();
     SchemaRejectionTests();
     JsonRejectionTests();
     RelationValidationTests();

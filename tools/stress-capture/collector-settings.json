@@ -1,0 +1,12 @@
+{
+  "server_root": "D:\\MT5 Platform\\Demo MainTrade",
+  "server_log_directory": "",
+  "output_directory": "",
+  "existing_performance_directory": "C:\\PerfLogs\\MT5-Stress",
+  "baseline_seconds": 30,
+  "tail_seconds": 30,
+  "maximum_capture_minutes": 30,
+  "maximum_performance_mb": 256,
+  "maximum_source_file_mb": 1024,
+  "maximum_total_source_mb": 4096
+}

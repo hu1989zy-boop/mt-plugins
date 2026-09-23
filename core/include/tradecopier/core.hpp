@@ -14,8 +14,8 @@ namespace tradecopier {
 using Units = std::uint64_t;
 using Id = std::uint64_t;
 constexpr Units kUnitsPerLot = 100000000;
-// These are business units, NOT MT5 SDK volume units. The future adapter must
-// convert explicitly and validate the precision supported by its actual SDK.
+// Business units. The Server API 6182 adapter verifies that VolumeExt has this
+// same scale; a different SDK must be reviewed before assuming identity conversion.
 
 struct Rational {
     std::uint64_t numerator = 1;

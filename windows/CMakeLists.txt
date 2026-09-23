@@ -3,7 +3,7 @@ if(NOT WIN32)
 endif()
 
 add_executable(TradeCopierManager WIN32 main.cpp)
-target_link_libraries(TradeCopierManager PRIVATE tradecopier_config comctl32 comdlg32 user32 gdi32)
+target_link_libraries(TradeCopierManager PRIVATE tradecopier_management_pipe comctl32 comdlg32 user32 gdi32 uxtheme)
 target_compile_features(TradeCopierManager PRIVATE cxx_std_17)
 target_compile_definitions(TradeCopierManager PRIVATE UNICODE _UNICODE NOMINMAX WIN32_LEAN_AND_MEAN WINVER=0x0601 _WIN32_WINNT=0x0601)
 set_target_properties(TradeCopierManager PROPERTIES CXX_EXTENSIONS OFF)

@@ -1,6 +1,8 @@
 #include "tradecopier/config.hpp"
+#include "tradecopier/symbols.hpp"
 
 #include <initializer_list>
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <numeric>
@@ -496,7 +498,7 @@ bool ValidateConfig(const CopierConfig& config, std::string& error) {
     for (std::size_t index = 0; index < config.relationships.size(); ++index) {
         const auto& rule = config.relationships[index];
         VolumePolicy policy;
-        if (!MakePolicy(rule, policy, error)) {
+        if (!MakePolicy(rule, policy, error) || !ValidateSymbolRule(rule.symbol_mask,rule.source_suffix,error)) {
             error = "relationships[" + std::to_string(index) + "]." + error;
             return false;
         }
@@ -525,7 +527,12 @@ bool ParseConfigJson(const std::string& json, CopierConfig& output, std::string&
     }
     try {
         const Json document = JsonReader(json).Read();
-        const Json& schema = SchemaTemplate();
+        Json schema = SchemaTemplate();
+        const auto& version=Field(document,"schema_version","config");
+        RequireKind(version,Json::Kind::Number,"config.schema_version");
+        if (version.text!="2" && version.text!="3") throw ConfigError("unsupported config schema_version");
+        schema.object["schema_version"].text=version.text;
+        const bool symbols=version.text=="3";
         RequireKind(document, Json::Kind::Object, "config");
         for (const auto& entry : document.object) {
             if (schema.object.count(entry.first) == 0)
@@ -549,8 +556,9 @@ bool ParseConfigJson(const std::string& json, CopierConfig& output, std::string&
             RequireKind(value, Json::Kind::Object, path);
             RuleConfig rule;
             rule.mode = ParseMode(TextField(value, "mode", path), path + ".mode");
-            const std::set<std::string> allowed{
+            std::set<std::string> allowed{
                 "relationship_id", "source_login", "follower_login", "enabled", "mode", ParameterName(rule.mode)};
+            if (symbols) allowed.insert({"symbol_mask","auto_symbol","source_suffix"});
             for (const auto& entry : value.object) {
                 if (allowed.count(entry.first) == 0)
                     throw ConfigError(path + ": unknown or mode-mismatched field " + entry.first);
@@ -560,6 +568,13 @@ bool ParseConfigJson(const std::string& json, CopierConfig& output, std::string&
             rule.follower_login = ParseId(TextField(value, "follower_login", path), path + ".follower_login");
             rule.enabled = EnabledField(value, path);
             rule.parameter = TextField(value, ParameterName(rule.mode), path);
+            if (symbols) {
+                rule.symbol_mask=TextField(value,"symbol_mask",path);
+                rule.source_suffix=TextField(value,"source_suffix",path);
+                const auto& auto_symbol=Field(value,"auto_symbol",path);
+                RequireKind(auto_symbol,Json::Kind::Boolean,path+".auto_symbol");
+                rule.auto_symbol=auto_symbol.boolean;
+            }
             parsed.relationships.push_back(std::move(rule));
         }
         if (!ValidateConfig(parsed, error)) return false;
@@ -576,6 +591,10 @@ std::string WriteConfigJson(const CopierConfig& config) {
     std::string error;
     if (!ValidateConfig(config, error)) throw std::invalid_argument(error);
     Json document = SchemaTemplate();
+    const bool symbols=std::any_of(config.relationships.begin(),config.relationships.end(),[](const RuleConfig& r) {
+        return r.symbol_mask!="*" || r.auto_symbol || !r.source_suffix.empty();
+    });
+    if (symbols) document.object["schema_version"].text="3";
     document.object["enabled"] = Boolean(config.enabled);
     auto& relationships = document.object["relationships"].array;
     for (const auto& rule : config.relationships) {
@@ -587,6 +606,11 @@ std::string WriteConfigJson(const CopierConfig& config) {
         value.object["enabled"] = Boolean(rule.enabled);
         value.object["mode"] = String(ModeName(rule.mode));
         value.object[ParameterName(rule.mode)] = String(rule.parameter);
+        if (symbols) {
+            value.object["symbol_mask"]=String(rule.symbol_mask);
+            value.object["auto_symbol"]=Boolean(rule.auto_symbol);
+            value.object["source_suffix"]=String(rule.source_suffix);
+        }
         relationships.push_back(std::move(value));
     }
     std::string result;

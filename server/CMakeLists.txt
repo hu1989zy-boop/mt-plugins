@@ -21,6 +21,7 @@ if(NOT _probe_sdk_version MATCHES "MTServerAPIVersion[ \t]+6182([ \t]|$)")
   message(FATAL_ERROR "This reviewed probe targets the supplied Server API 6182 SDK. Do not edit the SDK version to bypass this check.")
 endif()
 
+if(TRADECOPIER_BUILD_SDK_PROBE)
 add_library(TradeCopierSdkProbe SHARED probe.cpp)
 target_include_directories(TradeCopierSdkProbe SYSTEM PRIVATE "${MT5_SERVER_SDK_DIR}/Include")
 target_compile_features(TradeCopierSdkProbe PRIVATE cxx_std_17)
@@ -38,3 +39,17 @@ set_target_properties(TradeCopierSdkProbe PROPERTIES
 
 # This target deliberately does not link the copier business core and contains
 # no order submission, account mutation, equity query or network listener.
+endif()
+
+if(TRADECOPIER_BUILD_EXECUTOR)
+  add_library(TradeCopierExecutor SHARED executor.cpp mt5_port.cpp)
+  target_link_libraries(TradeCopierExecutor PRIVATE tradecopier_management_pipe bcrypt)
+  target_include_directories(TradeCopierExecutor SYSTEM PRIVATE "${MT5_SERVER_SDK_DIR}/Include")
+  target_compile_features(TradeCopierExecutor PRIVATE cxx_std_17)
+  target_compile_definitions(TradeCopierExecutor PRIVATE
+    WIN32_LEAN_AND_MEAN NOMINMAX UNICODE _UNICODE _WIN32_WINNT=0x0601 WINVER=0x0601)
+  target_compile_options(TradeCopierExecutor PRIVATE /W4 /permissive- /utf-8 /EHa)
+  set_target_properties(TradeCopierExecutor PROPERTIES
+    CXX_EXTENSIONS OFF PREFIX "" OUTPUT_NAME "TradeCopierExecutor"
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()

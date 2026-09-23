@@ -18,6 +18,9 @@ struct RuleConfig {
     bool enabled = false;
     SizingMode mode = SizingMode::LotRatio;
     std::string parameter;
+    std::string symbol_mask = "*";
+    bool auto_symbol = false; // Legacy configurations keep exact-name copying.
+    std::string source_suffix = {}; // Optional exact suffix; empty uses SDK metadata.
 };
 
 struct CopierConfig {
@@ -25,7 +28,7 @@ struct CopierConfig {
     std::vector<RuleConfig> relationships;
 };
 
-// Strict schema_version 2 codec for local configuration editing. Accepts only
+// Strict schema_version 2/3 codec for local configuration editing. Accepts only
 // the fixed policy values in config/copier.example.json. Parsing validates the
 // entire document and all rules, including disabled rules. Failure leaves the
 // supplied output unchanged. No SDK configuration or trading action is applied.
