@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "status": "logical_example_not_deployable",
+  "platform": "mt4",
+  "enabled": false,
+  "deployment": "server_api_dll",
+  "management_ui": "standalone_windows",
+  "server_scope": "same_live",
+  "account_requirements": {
+    "mode": "hedging",
+    "currency": "USD"
+  },
+  "activation": {
+    "scope": "per_relationship",
+    "new_positions_only": true,
+    "initial_positions": "ignore",
+    "existing_position_increases": "ignore",
+    "resume_catch_up": false
+  },
+  "trade_policy": {
+    "direction": "same_as_source",
+    "copy_pending_orders": false,
+    "follow_positions_from_triggered_pending_orders": true,
+    "copy_stop_loss": false,
+    "copy_take_profit": false,
+    "set_target_stop_loss_take_profit": false,
+    "sync_actual_source_closes": true,
+    "partial_close_basis": "target_actual_remaining_times_source_close_fraction",
+    "target_manual_full_close": "terminate_mapping_without_reopen",
+    "target_manual_partial_close": "continue_from_actual_remaining",
+    "copy_plugin_generated_trades": false
+  },
+  "quantity_policy": {
+    "equity_snapshot": "before_follower_submission",
+    "record_equity_snapshot_times": true,
+    "freeze_opening_parameters": true,
+    "open_rounding": "down_to_target_step",
+    "below_minimum_open": "skip_and_record",
+    "above_maximum_open": "reject_and_record",
+    "partial_close_rounding": "down_to_target_step",
+    "invalid_partial_close_remainder": "pause_and_record",
+    "source_full_close": "close_all_mapped_target_remaining"
+  },
+  "relationships": [
+    {
+      "relationship_id": "1",
+      "source_login": "10001",
+      "follower_login": "20001",
+      "enabled": false,
+      "mode": "multiplier",
+      "multiplier": "0.50"
+    },
+    {
+      "relationship_id": "2",
+      "source_login": "10001",
+      "follower_login": "20002",
+      "enabled": false,
+      "mode": "equity_ratio",
+      "coefficient": "1.00"
+    },
+    {
+      "relationship_id": "3",
+      "source_login": "10002",
+      "follower_login": "20001",
+      "enabled": false,
+      "mode": "fixed_lots",
+      "lots_per_source_trade": "0.20"
+    }
+  ]
+}

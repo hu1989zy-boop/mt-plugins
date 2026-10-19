@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>动态杠杆 · MT 插件管理</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-leverage" viewBox="0 0 24 24"><path d="M4 18V8m8 10V4m8 14v-7M1 8h6M9 4h6m2 7h6M1 18h22"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3Z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v16m-6-6 6 6 6-6"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </defs></svg>
+  <aside class="sidebar" aria-label="插件导航">
+    <a class="brand" href="./" aria-label="MT 插件管理首页"><span class="brand-mark">MT</span><span>插件管理<small>PLUGIN CONSOLE</small></span></a>
+    <div class="nav-caption">工作空间</div>
+    <nav>
+      <button class="nav-item" disabled><svg class="icon"><use href="#i-grid"/></svg><span>交易跟单</span><small>待接入</small></button>
+      <a class="nav-item active" href="./" aria-current="page"><svg class="icon"><use href="#i-leverage"/></svg><span>动态杠杆</span></a>
+      <button class="nav-item" disabled><svg class="icon"><use href="#i-user"/></svg><span>账户状态</span><small>待接入</small></button>
+    </nav>
+    <div class="sidebar-bottom"><span class="local-dot"></span>本地配置工作台<small>MT4 / MT5 · 独立配置</small></div>
+  </aside>
+  <main>
+    <div class="breadcrumb">插件管理 <span>/</span> 动态杠杆</div>
+    <header class="page-header">
+      <div><div class="title-line"><h1>动态杠杆</h1><label class="sr-only" for="platform">交易平台</label><select id="platform"><option value="mt4">MT4</option><option value="mt5">MT5</option></select></div><p>按开仓后总持仓选择新仓杠杆，旧仓保留原杠杆</p></div>
+      <button id="new-rule" class="button primary" disabled><svg class="icon"><use href="#i-plus"/></svg>新增规则</button>
+    </header>
+    <div class="mode-note"><svg class="icon"><use href="#i-info"/></svg><span>新仓独立保证金正在验证，旧账户调杠杆执行已停用。本页可管理配置和试算；保存不代表服务器已执行。</span></div>
+    <div id="message" class="message" role="alert" hidden><span id="message-text"></span><button id="message-dismiss" class="icon-button" aria-label="关闭提示"><svg class="icon"><use href="#i-close"/></svg></button></div>
+    <section class="settings-bar" aria-label="平台设置">
+      <div class="global-control"><label class="switch"><input id="global-enabled" type="checkbox" role="switch" disabled><span class="switch-track"></span><span class="switch-label">启用动态杠杆</span></label><span id="global-status" class="muted small">配置未加载</span></div>
+      <div class="poll-control"><label for="poll-interval">旧版轮询间隔</label><div class="input-unit"><input id="poll-interval" type="number" min="100" max="60000" step="1" value="1000" disabled><span>毫秒</span></div></div>
+    </section>
+    <section class="card rules-card" aria-labelledby="rules-heading">
+      <div class="section-heading"><div><h2 id="rules-heading">杠杆规则 <span id="rule-count" class="count">0</span></h2><p>从上到下，第一条启用且匹配的规则生效；组别仅用于筛选账户，持仓按每个账户独立计算。</p></div></div>
+      <div id="loading" class="loading" role="status">正在读取平台配置…</div>
+      <div id="empty-state" class="empty-state" hidden><div class="empty-symbol"><svg class="icon"><use href="#i-leverage"/></svg></div><h3>添加第一条杠杆规则</h3><p>选择账户组别或交易账号，再设置持仓手数与杠杆的对应关系。</p><div class="empty-actions"><button id="empty-add" class="button primary">新增规则</button><button id="example-rule" class="button">填入示例</button></div><small>示例使用 1000 → 500 → 200 三档，填入后仍需保存配置。</small></div>
+      <div id="table-wrapper" class="table-wrapper" hidden><table class="rules-table"><thead><tr><th scope="col" class="priority-column">优先级</th><th scope="col">规则 / 适用方式</th><th scope="col">匹配对象</th><th scope="col">杠杆档位</th><th scope="col">状态</th><th scope="col">操作</th></tr></thead><tbody id="rules-body"></tbody></table></div>
+      <div class="table-note"><span>按开仓后持仓选档 · 整笔新仓同一档 · 旧仓不重新选档</span><span>↑ 上移提高优先级</span></div>
+    </section>
+    <section class="card preview-card" aria-labelledby="preview-heading">
+      <div class="section-heading"><div><h2 id="preview-heading">规则匹配预览 <span class="subtle-badge">仅计算</span></h2><p>输入本次开仓后的预计总持仓，试算整笔新增仓位的杠杆；旧仓不变。数据由您输入，不读取真实账户。</p></div></div>
+      <form id="preview-form" class="preview-form" novalidate><div class="field"><label for="preview-login">交易账户</label><input id="preview-login" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 10001" maxlength="255" required></div><div class="field"><label for="preview-group">账户组别</label><input id="preview-group" type="text" autocomplete="off" placeholder="例如 real\VIP" maxlength="255"></div><div class="field"><label for="preview-lots">开仓后总持仓（手）</label><input id="preview-lots" type="text" inputmode="decimal" autocomplete="off" placeholder="例如 3.5" maxlength="40" required></div><button id="preview-button" class="button" type="submit" disabled>测试匹配</button></form>
+      <div id="preview-result" class="preview-result" role="status" aria-live="polite" hidden></div>
+    </section>
+    <details class="config-details"><summary>配置位置与保存记录</summary><p id="config-path" class="path">尚未加载</p><p class="muted small">保存记录仅包含管理端配置操作，不代表交易服务器执行日志。</p><ul id="audit-list" class="audit-list"><li>暂无保存记录</li></ul></details>
+    <footer class="save-bar"><div class="save-state"><span id="dirty-dot" class="state-dot"></span><strong id="save-status">正在加载</strong><small id="save-detail">MT4 配置</small></div><div class="save-actions"><button id="reload-config" class="button" disabled>重新加载</button><button id="revert-config" class="button" disabled>撤销修改</button><button id="save-config" class="button primary" disabled>保存配置</button></div></footer>
+  </main>
+  <dialog id="rule-dialog" class="rule-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+    <form id="rule-form" novalidate>
+      <header class="dialog-header"><div><h2 id="dialog-title">新增规则</h2><p id="dialog-description">按每个账户开仓后的总持仓，选择整笔新仓杠杆</p></div><button id="close-rule" class="icon-button" type="button" aria-label="关闭规则编辑"><svg class="icon"><use href="#i-close"/></svg></button></header>
+      <div class="dialog-body">
+        <div id="rule-error" class="form-error" role="alert" hidden></div>
+        <div class="field"><label for="rule-name">规则名称</label><input id="rule-name" type="text" maxlength="80" autocomplete="off" required placeholder="为这条规则起个名字"></div>
+        <fieldset class="scope-field"><legend>适用对象</legend><label class="scope-option"><input type="radio" name="scope" value="group" checked><span>组别</span></label><label class="scope-option"><input type="radio" name="scope" value="account"><span>账户</span></label></fieldset>
+        <div class="field"><label id="selector-label" for="rule-selector">账户组别</label><textarea id="rule-selector" rows="2" maxlength="4096" aria-describedby="selector-help" spellcheck="false" required></textarea><p id="selector-help" class="field-help"></p><div id="group-examples" class="group-examples"><code>*</code> 所有组别 <span>·</span> <code>real*</code> 前缀匹配 <span>·</span> <code>!ABC,*</code> 排除 ABC</div></div>
+        <div class="tiers-heading"><h3>开仓后总持仓与新仓杠杆</h3><span class="muted small">手数精度最多 8 位小数</span></div>
+        <div class="tiers-scroll"><table class="tiers-table"><thead><tr><th scope="col">持仓范围（手）</th><th scope="col">杠杆</th><th scope="col"><span class="sr-only">删除档位</span></th></tr></thead><tbody id="tiers-body"></tbody></table></div>
+        <button id="add-tier" class="add-tier" type="button"><svg class="icon"><use href="#i-plus"/></svg>添加档位</button>
+        <p class="field-help">各档范围自动衔接，无重叠、无空档。只有超过上限才进入下一档；整笔新仓使用该档位，旧仓不变。</p>
+      </div>
+      <footer class="dialog-footer"><label class="switch"><input id="rule-enabled" type="checkbox" role="switch" checked><span class="switch-track"></span><span class="switch-label">启用规则</span></label><div><button id="cancel-rule" class="button" type="button">取消</button><button class="button primary" type="submit">保存规则</button></div><p>规则编辑后，请在主页面保存配置。</p></footer>
+    </form>
+  </dialog>
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message"><h2 id="confirm-title">确认操作</h2><p id="confirm-message"></p><div class="confirm-actions"><button id="confirm-no" class="button">继续编辑</button><button id="confirm-yes" class="button primary">确认</button></div></dialog>
+  <noscript>请启用浏览器 JavaScript，以管理动态杠杆配置。</noscript>
+</body>
+</html>

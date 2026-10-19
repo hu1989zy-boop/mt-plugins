@@ -1,0 +1,70 @@
+cmake_minimum_required(VERSION 3.21)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  project(mt4_dynamic_leverage VERSION 0.2.0 LANGUAGES CXX)
+  include(CTest)
+endif()
+if(NOT TARGET dynamic_leverage_core)
+  add_subdirectory(../shared "${CMAKE_CURRENT_BINARY_DIR}/shared")
+endif()
+
+find_package(Threads REQUIRED)
+add_library(mt4_dynamic_leverage_model STATIC model.cpp worker.cpp)
+target_include_directories(mt4_dynamic_leverage_model PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(mt4_dynamic_leverage_model PUBLIC dynamic_leverage_core Threads::Threads)
+target_compile_features(mt4_dynamic_leverage_model PUBLIC cxx_std_17)
+set_target_properties(mt4_dynamic_leverage_model PROPERTIES CXX_EXTENSIONS OFF
+  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+if(MSVC)
+  target_compile_options(mt4_dynamic_leverage_model PRIVATE /W4 /permissive- /utf-8 /EHa)
+else()
+  target_compile_options(mt4_dynamic_leverage_model PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+if(BUILD_TESTING)
+  add_executable(mt4_dynamic_leverage_tests tests/model_tests.cpp)
+  target_link_libraries(mt4_dynamic_leverage_tests PRIVATE mt4_dynamic_leverage_model)
+  set_target_properties(mt4_dynamic_leverage_tests PROPERTIES
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  add_test(NAME mt4_dynamic_leverage_tests COMMAND mt4_dynamic_leverage_tests)
+  add_executable(mt4_dynamic_leverage_worker_tests tests/worker_tests.cpp)
+  target_link_libraries(mt4_dynamic_leverage_worker_tests PRIVATE mt4_dynamic_leverage_model)
+  set_target_properties(mt4_dynamic_leverage_worker_tests PROPERTIES
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  add_test(NAME mt4_dynamic_leverage_worker_tests COMMAND mt4_dynamic_leverage_worker_tests)
+  set_tests_properties(mt4_dynamic_leverage_worker_tests PROPERTIES TIMEOUT 60)
+  add_executable(mt4_dynamic_leverage_order_margin_tests tests/order_margin_tests.cpp)
+  target_link_libraries(mt4_dynamic_leverage_order_margin_tests PRIVATE mt4_dynamic_leverage_model)
+  set_target_properties(mt4_dynamic_leverage_order_margin_tests PROPERTIES
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  add_test(NAME mt4_dynamic_leverage_order_margin_tests COMMAND mt4_dynamic_leverage_order_margin_tests)
+endif()
+
+option(DYNAMIC_LEVERAGE_MT4_BUILD_SERVER "Build MT4 Server API DLL (Windows MSVC Win32)" OFF)
+set(MT4_SERVER_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../vendor/mt4-sdk" CACHE PATH "Proprietary MT4 Server API SDK")
+if(DYNAMIC_LEVERAGE_MT4_BUILD_SERVER)
+  if(NOT WIN32 OR NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+    message(FATAL_ERROR "MT4DynamicLeverage requires Windows MSVC Win32; configure mt4/ with -A Win32")
+  endif()
+  set(_header "${MT4_SERVER_SDK_DIR}/include/MT4ServerAPI.h")
+  if(NOT EXISTS "${_header}")
+    message(FATAL_ERROR "Missing proprietary SDK: ${_header}")
+  endif()
+  file(STRINGS "${_header}" _version REGEX "^#define[ \t]+ServerApiVersion[ \t]+[0-9]+")
+  if(NOT _version MATCHES "ServerApiVersion[ \t]+5([ \t]|$)")
+    message(FATAL_ERROR "This adapter requires unmodified ServerApiVersion 5 headers")
+  endif()
+  add_library(MT4DynamicLeverage SHARED plugin.cpp sdk_port.cpp order_margin.cpp plugin.def)
+  target_include_directories(MT4DynamicLeverage SYSTEM PRIVATE "${MT4_SERVER_SDK_DIR}/include")
+  target_link_libraries(MT4DynamicLeverage PRIVATE mt4_dynamic_leverage_model)
+  target_compile_definitions(MT4DynamicLeverage PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN _USE_32BIT_TIME_T _WIN32_WINNT=0x0601 WINVER=0x0601)
+  target_compile_options(MT4DynamicLeverage PRIVATE /W4 /permissive- /utf-8 /EHa)
+  set_target_properties(MT4DynamicLeverage PROPERTIES PREFIX "" CXX_EXTENSIONS OFF
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  include(../shared/cmake/plugin_validation.cmake)
+  dynamic_leverage_validate_dll(MT4DynamicLeverage mt4
+    MtSrvAbout MtSrvStartup MtSrvCleanup
+    MtSrvPluginCfgSet MtSrvPluginCfgNext MtSrvPluginCfgTotal
+    MtSrvTradesAdd MtSrvTradesAddExt MtSrvTradesAddRequest MtSrvTradesUpdate
+    MtSrvTradesRestore MtSrvTradesCloseBy
+    MtSrvUserAdd MtSrvUserUpdate MtSrvUserDelete MtSrvUserRestore)
+endif()

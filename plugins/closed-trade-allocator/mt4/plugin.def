@@ -1,0 +1,12 @@
+LIBRARY MT4ClosedTradeAllocator
+EXPORTS
+    MtSrvAbout
+    MtSrvStartup
+    MtSrvCleanup
+    MtSrvPluginCfgSet
+    MtSrvPluginCfgNext
+    MtSrvPluginCfgTotal
+    MtSrvTradesAdd
+    MtSrvTradesAddExt
+    MtSrvTradesUpdate
+    MtSrvTradesRestore

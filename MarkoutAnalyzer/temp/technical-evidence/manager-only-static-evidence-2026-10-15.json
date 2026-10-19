@@ -1,0 +1,246 @@
+{
+  "inspection_date": "2026-10-15",
+  "phase": "Technical Evidence Phase",
+  "execution_order": [
+    "MT5 Manager static audit",
+    "MT4 Manager static audit",
+    "MT4 Terminal official standard-path review triggered by Manager INSUFFICIENT EVIDENCE"
+  ],
+  "host": {
+    "system": "Darwin",
+    "release": "24.6.0",
+    "machine": "arm64"
+  },
+  "sdk_header_versions": {
+    "mt5_manager_api": 6182,
+    "mt4_program_version": 400,
+    "mt4_program_build": 1470
+  },
+  "runtime": {
+    "status": "NOT RUN",
+    "blocked_by": [
+      "No accessible Windows SDK execution endpoint in this task",
+      "No task-provided target Server read-only connection and evidence scope or runtime evidence"
+    ],
+    "commands_available": {
+      "wine": null,
+      "wine64": null,
+      "pwsh": null,
+      "dotnet": null,
+      "x86_64-w64-mingw32-g++": null
+    },
+    "network_tested": false,
+    "credentials_searched": false,
+    "sdk_loaded": false,
+    "sdk_compiled": false,
+    "probe_created": false,
+    "server_queried": false,
+    "terminal_run": false
+  },
+  "outcome": {
+    "mt5_manager_full_contract": "INSUFFICIENT EVIDENCE",
+    "mt4_manager_full_contract": "INSUFFICIENT EVIDENCE",
+    "manager_only_architecture": "UNRESOLVED",
+    "mt5_terminal_required": "UNRESOLVED",
+    "mt4_terminal_required": "UNRESOLVED",
+    "q01": "NOT READY FOR DECISION"
+  },
+  "sources": [
+    {
+      "path": "vendor/mt4-manager-sdk/MT4ManagerAPI.h",
+      "sha256": "8d5ecc24c4ff396f5d50f614e680619f238a8fe9efc0d7f47d46002c1a7fdd4a"
+    },
+    {
+      "path": "vendor/mt4-manager-sdk/Examples/MT4ManagerAPI.h",
+      "sha256": "8d5ecc24c4ff396f5d50f614e680619f238a8fe9efc0d7f47d46002c1a7fdd4a"
+    },
+    {
+      "path": "vendor/mt4-manager-sdk/Examples/ManagerAPISample/PageDealer.cpp",
+      "sha256": "8370ca88ae32a963ba07ea98b1b7c1a519f8b5249b415cc636e8b1099e8921ef"
+    },
+    {
+      "path": "vendor/mt4-manager-sdk/Examples/ManagerAPISample/PageOrders.cpp",
+      "sha256": "b396abfc545768d8d2a9a9a9786218ac61a73ba38a0efe205cdb33f4bc00976f"
+    },
+    {
+      "path": "vendor/mt5-sdk/Include/MT5APIManager.h",
+      "sha256": "afcbe576901fab2454108618b7fb886fddb13e8cfee33e410b8220850d2d395a"
+    },
+    {
+      "path": "vendor/mt5-sdk/Include/Bases/MT5APITick.h",
+      "sha256": "2004125c6487e6e5f86819babc88df08c2349b2308c16cb34d445a8d17e90081"
+    },
+    {
+      "path": "vendor/mt5-sdk/Include/Bases/MT5APIDeal.h",
+      "sha256": "10b07951cd7b94f278eabbe762c125f200fb57b77a19084bbdc0fe09373ff83f"
+    },
+    {
+      "path": "vendor/mt5-sdk/Include/Config/MT5APIConfigSymbol.h",
+      "sha256": "0d10503e7e3803403cfbbbf544299383d3711084b7185e144bd7eafbcf79e2e5"
+    },
+    {
+      "path": "vendor/mt5-sdk/Include/Classes/MT5APIMath.h",
+      "sha256": "3b3df11d6ef5100c4c9970b956bdd79a90cae84bbc2292932a4c0c8cec8ad232"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_tickhistoryrequest.htm",
+      "sha256": "a40d1ae85ae16f8b74fc40da904e52aabe7ebcefe8cf9ad3f7b48cbb588302a3"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_tickhistoryrequestraw.htm",
+      "sha256": "093f4d8daa2eb2a0af94db476348daae96a8d6fdc4505b41710e902f36ad8ed5"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/mttickshort.htm",
+      "sha256": "f63fb3d708df989db8ffa07eb741259a5c37563fb5f4e6c151856975074fd985"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtdeal_price.htm",
+      "sha256": "a11ad7e32c3378df958e5357eb551ca778be50f392ac7e63f3025e8a271cec70"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtdeal_time.htm",
+      "sha256": "623e510a85cb84e7435d6be48a8d4cc954982adb7c6332f9c1f84ebd8bfda510"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtdeal_timemsc.htm",
+      "sha256": "3bfd2f9d17d83f2121003d41bc5243c06c76e17711d5b42a8fe06a0535b71e53"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_dealrequest.htm",
+      "sha256": "4beeadbd27d51f0c5e05192df6a67ab4335ef53cba83d034b86822d138a62f23"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_dealrequestpage.htm",
+      "sha256": "ec6d92882276a340feeb61afe480feb397b1fcb0d5c8223be3a453fc778ec5c2"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtdeal_volume.htm",
+      "sha256": "4c5e463922843a6393a7863781b5076a4acb33f5fa2fc26b63f53fd67d9c4e57"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtdeal_volumeext.htm",
+      "sha256": "d6c1e13fbc324cbbaea39fb3ac9f274a7cbd706bf0a30eb3bf9bfa7db400f8c5"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/features.htm",
+      "sha256": "188de31498020891e03a249a6f4420d52e1cb5d82317c83c06c37b52d5cb5a22"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_connect.htm",
+      "sha256": "f83e82870d07e2b5c924cd4a1fcaf5556ddd8e96bfb9b39fa23a4163e2519058"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_networkserver.htm",
+      "sha256": "1b54ed38a816b8b7eb3c3e2a3fc9546e1c2418487ec9be79fd18c1e7f0a487a7"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtconserver_id.htm",
+      "sha256": "ca78a596bd03dc565192d53befdfd4380e0088dc8f47a992d695642f8233db3a"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtconsymbol_point.htm",
+      "sha256": "eb3ce5fbc816838be5ac54756aaf8b140bd5d87e3815628958fa70fa0ad2b0e0"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtconsymbol_symbol.htm",
+      "sha256": "0bf28c66d689fa5d69adb9480da2378b1ccdc18ab9136540392afe404ae9aa01"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_symbolrequest.htm",
+      "sha256": "d89cfcce9fb67d65954896a31d1061218ed8159a823e72a9e5459bc18f6fec9f"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_symbolget.htm",
+      "sha256": "c6dba5a015366cbf5fb4ac4502d63aadc9284e4e3f294dd838fe505b379587cb"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtcongroupsymbol_spreaddiff.htm",
+      "sha256": "b3b905e0a5ac1e7a5c5d026972dda17847a68ed082c28001605e01ab71495d8d"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtcongroupsymbol_spreaddiffbalance.htm",
+      "sha256": "c6e35476a901136e2979b51588f4087483289d705caf0a272c0b6ea74523a4d2"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtconsymbol_enum.htm",
+      "sha256": "f1bf1886a556d0a55f8622369fb7a044609f4e02f820a9722f36880f9c9d9a40"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_timeserverrequest.htm",
+      "sha256": "3c3eb7bcffabdb648356c2f5e397105ae72484946d14106ca0a85e3e5a3b1538"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtmanagerapi_timeserver.htm",
+      "sha256": "55b9f78450a14345717f824fdc7297725ae1f8e8405748bc7a611d042bc22428"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtcontime_timezone.htm",
+      "sha256": "0fabc07e97b6729702894c426dd009ed892694d11c2e07d7886cfac9946630f7"
+    },
+    {
+      "path": "vendor/mt5-sdk/Docs/html/imtcontime_daylightstate.htm",
+      "sha256": "7fd4c5c67fe75bea5efad97680d40484bc96a308aa94ff566bc0c659f6b81f71"
+    }
+  ],
+  "binaries": [
+    {
+      "path": "vendor/mt4-manager-sdk/mtmanapi.dll",
+      "sha256": "a51a5e20807f937b7e288454d9b6d2cbbc04684015541ecaadc85ef20bbd4515",
+      "format": "PE32 executable (DLL) (GUI) Intel 80386, for MS Windows",
+      "loaded": false
+    },
+    {
+      "path": "vendor/mt4-manager-sdk/mtmanapi64.dll",
+      "sha256": "5d8039b319808151fa16c9b242fcba127138a9c83d9d8940955fa4ac9e82ed64",
+      "format": "PE32+ executable (DLL) (GUI) x86-64, for MS Windows",
+      "loaded": false
+    },
+    {
+      "path": "vendor/mt5-sdk/Libs/MT5APIManager64.dll",
+      "sha256": "22842adaa4253c7592bae316daab12d4d2a2e62cfe979921987d46a0db75417f",
+      "format": "PE32+ executable (DLL) (GUI) x86-64, for MS Windows",
+      "loaded": false
+    },
+    {
+      "path": "vendor/mt5-sdk/Libs/MT5APIManager64arm.dll",
+      "sha256": "8248b3f765ab259358b4d92b81428d4cd18bbb2eab8c572a5f6f303d02beedad",
+      "format": "PE32+ executable (DLL) (GUI) Aarch64, for MS Windows",
+      "loaded": false
+    }
+  ],
+  "official_public_sources": [
+    "https://docs.mql4.com/marketinformation/symbolinfotick",
+    "https://docs.mql4.com/series",
+    "https://www.metatrader4.com/en/trading-platform/help/autotrading/tester/tester_parameters",
+    "https://www.metatrader4.com/en/trading-platform/help/service/history_center"
+  ],
+  "negative_search_scope": [
+    "Existing MT4 Manager SDK headers, C++ samples, Delphi wrapper: no complete TicksRequest contract or call example found in inspected package",
+    "MT5 Manager history method pages and MTTickShort: no documented same-timestamp tie order found; Terminal ordering not transferred to Manager"
+  ],
+  "preserved_architecture_hashes": {
+    "MarkoutAnalyzer/docs/architecture-design/01-product-scope-and-decisions.md": "fa6d11425a499ecaeb0d2e8c5ce6a8c37f5f10bf318d30acce55ede7cab60f3c",
+    "MarkoutAnalyzer/docs/architecture-design/02-system-architecture.md": "ccc6bc898bc33d5c242637c1b8436a3e8ebe54ed42acf8b456937a0edb224263",
+    "MarkoutAnalyzer/docs/architecture-design/03-markout-calculation-spec.md": "828d33dddf0366bbb64cf31164d50fb25693a38c58e1f4992802cc656f6037a6",
+    "MarkoutAnalyzer/docs/architecture-design/04-data-model.md": "cb92dd4159e15a2954219df3f73f562c29cac75817cd56d91e9f977f5edcc6d3",
+    "MarkoutAnalyzer/docs/architecture-design/05-state-and-error-model.md": "2160b0397b05d85ddb9d150c54bb161a351073e828f75b61259ae5e48d4b06c0",
+    "MarkoutAnalyzer/docs/architecture-design/06-ui-ux-specification.md": "b37ad46586f202948ec90f54eedbcee595bf072deacae91c557e44698cec24de",
+    "MarkoutAnalyzer/docs/architecture-design/07-wireframes.md": "54f363436c87838a5f8eb94eb47f2f718b7d40210d6eb004c181d927a81b3d77",
+    "MarkoutAnalyzer/docs/architecture-design/08-acceptance-criteria.md": "162dc1f9fe4dfb05bb12e5dec29c9443e34cd6cf932492baaac990252550ce16",
+    "MarkoutAnalyzer/docs/architecture-design/09-open-questions.md": "701af8ec0e3caec8cf5167907ddbed0941d89e971b8e32654e39168347538f5f",
+    "MarkoutAnalyzer/docs/architecture-design/10-assumptions.md": "4e29a79295e13bebafb92cab1543446895fe9f65b3b56069243c2b183b4d7741",
+    "MarkoutAnalyzer/docs/architecture-design/11-technology-stack-options.md": "9310f0c8048c53cf6f80672858c2bf9e5aa8840824881380680310b609532a25",
+    "MarkoutAnalyzer/docs/architecture-design/12-technical-evidence-and-review.md": "716ef78438cc4ac7185c07e82a3101887900ce6e09d036b7eb1f4320a628e93a",
+    "MarkoutAnalyzer/docs/architecture-design/13-architecture-review-decisions.md": "2cc39de80d7c9ed2ba422f739de4df08805d0964208d6d3ef407a7e0f508f4d4",
+    "MarkoutAnalyzer/docs/architecture-design/14-money-removal-impact-analysis.md": "cab2e419c615ca51ab269cab33199a231c942748ce038078a2b4306536b0a216",
+    "MarkoutAnalyzer/docs/architecture-design/README.md": "9a75745dd5bd4fa6462c8f3a117a836aa46db30dbb6f4db08926642a29962cd9"
+  },
+  "withdrawn_windows_guide_sha256": "b4acbd1e781d3a241a288eb14f09880550bad83ae4232cd7b648b890320b1b9b",
+  "notes": [
+    "No runtime status is inferred from header declarations or sample code.",
+    "Hashes identify locally inspected SDK artifacts; they do not prove official publisher signature or target Server compatibility.",
+    "No Money, FX, USD-only or cross-symbol Points ranking validation.",
+    "No full proprietary SDK content or credentials included."
+  ]
+}

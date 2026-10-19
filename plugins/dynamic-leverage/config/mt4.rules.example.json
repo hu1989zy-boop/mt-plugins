@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "platform": "mt4",
+  "enabled": false,
+  "poll_interval_ms": 1000,
+  "rules": [
+    {
+      "id": "account-special",
+      "name": "指定账户优先",
+      "enabled": true,
+      "scope": "account",
+      "selector": "10001,10002",
+      "tiers": [
+        {
+          "above_lots": "0",
+          "leverage": 500
+        },
+        {
+          "above_lots": "5",
+          "leverage": 200
+        }
+      ]
+    },
+    {
+      "id": "group-default",
+      "name": "组别默认规则",
+      "enabled": true,
+      "scope": "group",
+      "selector": "!demo*,real*,vip*",
+      "tiers": [
+        {
+          "above_lots": "0",
+          "leverage": 1000
+        },
+        {
+          "above_lots": "2",
+          "leverage": 500
+        },
+        {
+          "above_lots": "5",
+          "leverage": 200
+        }
+      ]
+    }
+  ]
+}

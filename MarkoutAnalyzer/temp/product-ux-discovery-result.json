@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "cwd": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer",
+      "skills": [
+        {
+          "name": "product-design-and-ux",
+          "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/product-design-and-ux/SKILL.md",
+          "scope": "repo",
+          "enabled": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "cwd": "/Users/lukeh/Documents/workspace/codex/mt-plugins",
+      "skills": [],
+      "errors": []
+    }
+  ],
+  "project_recognized": true,
+  "project_scope": "repo",
+  "exposed_to_parent": false
+}

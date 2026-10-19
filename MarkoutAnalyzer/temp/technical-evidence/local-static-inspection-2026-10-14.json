@@ -1,0 +1,210 @@
+{
+  "record_date": "2026-10-14",
+  "evidence_level": "STATIC_FILE_INSPECTION_ONLY",
+  "host": {
+    "platform": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+    "system": "Darwin",
+    "machine": "arm64",
+    "runtime_commands": {
+      "wine": null,
+      "wine64": null,
+      "pwsh": null,
+      "dotnet": null
+    }
+  },
+  "scope": "Read-only SDK file identity, PE architecture and declared symbol checks; no DLL loaded, SDK call, server login, terminal query, trading action or claim of runtime capability.",
+  "checks": {
+    "mt4_manager_program_version": "400",
+    "mt4_manager_build": "1470",
+    "mt5_manager_api_version": "6182",
+    "mt4_tickrecord_present": true,
+    "mt4_ticksrequest_present": true,
+    "mt5_tickhistoryrequest_present": true,
+    "mt5_timeserverrequest_present": true
+  },
+  "files": [
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt4-manager-sdk/MT4ManagerAPI.h",
+      "bytes": 103400,
+      "sha256": "8d5ecc24c4ff396f5d50f614e680619f238a8fe9efc0d7f47d46002c1a7fdd4a"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt4-manager-sdk/mtmanapi.dll",
+      "bytes": 5009016,
+      "sha256": "a51a5e20807f937b7e288454d9b6d2cbbc04684015541ecaadc85ef20bbd4515",
+      "pe_machine": "0x14c",
+      "architecture": "x86"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt4-manager-sdk/mtmanapi64.dll",
+      "bytes": 3770768,
+      "sha256": "5d8039b319808151fa16c9b242fcba127138a9c83d9d8940955fa4ac9e82ed64",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Include/MT5APIManager.h",
+      "bytes": 134747,
+      "sha256": "afcbe576901fab2454108618b7fb886fddb13e8cfee33e410b8220850d2d395a"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Include/Bases/MT5APIDeal.h",
+      "bytes": 15676,
+      "sha256": "10b07951cd7b94f278eabbe762c125f200fb57b77a19084bbdc0fe09373ff83f"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIManager64avx.dll",
+      "bytes": 8933520,
+      "sha256": "65fc8f2f752d3d16a89104720d44bb5796270f3b0d80e92810c8ef3cae58d433",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5ManagerAPI64Net10.dll",
+      "bytes": 408888,
+      "sha256": "4887bc68e35f44af7d95a58a0491e5b503a0b9295be30786e064b6dfec469fd6",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIManager64avx2.dll",
+      "bytes": 8791720,
+      "sha256": "5c64b50e896f28fa6eda39a3d9fdd7c0dc63d009b6cf2e62a791261944936b52",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5WebAPI64.dll",
+      "bytes": 246136,
+      "sha256": "b898d2dd5a52ff00779ad1f3b32e70d4439ef0f03a0ae017a1f883ee1fb18c61",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIGateway64avx.dll",
+      "bytes": 5767200,
+      "sha256": "f9e580894b31d13432cd511d262d4d484acd5342207a38d0f2be0789235ff69f",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5ManagerAPI64arm.dll",
+      "bytes": 398520,
+      "sha256": "0b91834552008019f6aa0f7644510b693cfaddca77bd2f6653b8b14b0d87d6fd",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIManager64.dll",
+      "bytes": 7491896,
+      "sha256": "22842adaa4253c7592bae316daab12d4d2a2e62cfe979921987d46a0db75417f",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIGateway64.dll",
+      "bytes": 4360624,
+      "sha256": "1e30a2070b0fa5f4b951900c64e04bf24e6d3ce02968669cf1f9da13d3557c79",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5GatewayAPI64Net10.dll",
+      "bytes": 198880,
+      "sha256": "04fca850580c38157c31d304035c3589d26037233d9d290c31e33c0c0a84b8df",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5CommonAPI64Net10.dll",
+      "bytes": 1085056,
+      "sha256": "da511c9ad1a5130561a57eae1ace6c6a3ef8b0678021a12da77569323a1e5218",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIGateway64avx2.dll",
+      "bytes": 5614112,
+      "sha256": "3e636bbac3a7f0111d4ebf2c5d33c1c6fa46e3d51f006b82541aba5e2ee6dd6b",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5GatewayAPI64arm.dll",
+      "bytes": 186368,
+      "sha256": "55ce78981bcce7a5f4d64f9719cb1147b8637ee76e89d27d58a9379635a10c1b",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5GatewayAPI64Net10arm.dll",
+      "bytes": 195512,
+      "sha256": "a277ea7490093293867d41d78305e4803ecc11b274675c80c3ea400452893698",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5CommonAPI64.dll",
+      "bytes": 1077448,
+      "sha256": "cd01f7c6ab02705035fa0e9a2aed4e8d1cb558eb1d7a0c9a46e1378742a6be0a",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5CommonAPI64Net10arm.dll",
+      "bytes": 1047424,
+      "sha256": "5d826fd802080eb5bce56c87dd1c40284a4ba7d80cf3d259387fa686c38ae6ba",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5CommonAPI64arm.dll",
+      "bytes": 1038280,
+      "sha256": "509dfcb6e89e59e089219594e5a03c4339bef7349a6cc71d166e4c310b608af6",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIManager64arm.dll",
+      "bytes": 10636322,
+      "sha256": "8248b3f765ab259358b4d92b81428d4cd18bbb2eab8c572a5f6f303d02beedad",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5ManagerAPI64Net10arm.dll",
+      "bytes": 407664,
+      "sha256": "f2a29695575442a6e3aaa0d23ef8a6e2a1efbef7ac6bb2440f93f6ee57025e89",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5WebAPI.dll",
+      "bytes": 246136,
+      "sha256": "05d7d9796ed651106dec408381b5adf5443d9787518cd46153674977f7c3bdd7",
+      "pe_machine": "0x14c",
+      "architecture": "x86"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5ManagerAPI64.dll",
+      "bytes": 398712,
+      "sha256": "8f80b32b7fb7c01287573f7a09fc8c055212d074bad7404bec0094d59d951236",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MT5APIGateway64arm.dll",
+      "bytes": 7569522,
+      "sha256": "65b1d54483bdcd2c002276d9006b218cf3dcb4ed1a312ac417962b56f4f603b8",
+      "pe_machine": "0xaa64",
+      "architecture": "ARM64"
+    },
+    {
+      "path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/vendor/mt5-sdk/Libs/MetaQuotes.MT5GatewayAPI64.dll",
+      "bytes": 188704,
+      "sha256": "1878089656470ad0f75206f8629a416959512667d5b6c9b14b420e66904173a7",
+      "pe_machine": "0x8664",
+      "architecture": "x64"
+    }
+  ]
+}

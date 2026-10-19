@@ -1,0 +1,15 @@
+LIBRARY MT4TradeCopierExecutor
+EXPORTS
+    MtSrvAbout
+    MtSrvStartup
+    MtSrvCleanup
+    MtSrvPluginCfgSet
+    MtSrvPluginCfgNext
+    MtSrvPluginCfgTotal
+    MtSrvTradesAdd
+    MtSrvTradesAddExt
+    MtSrvTradesAddRequest
+    MtSrvTradesUpdate
+    MtSrvTradesCloseBy
+    MtSrvTradeRequestApply
+    MtSrvTradeRequestRestore

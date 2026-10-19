@@ -1,0 +1,18 @@
+LIBRARY MT4DynamicLeverage
+EXPORTS
+    MtSrvAbout
+    MtSrvStartup
+    MtSrvCleanup
+    MtSrvPluginCfgSet
+    MtSrvPluginCfgNext
+    MtSrvPluginCfgTotal
+    MtSrvTradesAdd
+    MtSrvTradesAddExt
+    MtSrvTradesAddRequest
+    MtSrvTradesUpdate
+    MtSrvTradesRestore
+    MtSrvTradesCloseBy
+    MtSrvUserAdd
+    MtSrvUserDelete
+    MtSrvUserUpdate
+    MtSrvUserRestore

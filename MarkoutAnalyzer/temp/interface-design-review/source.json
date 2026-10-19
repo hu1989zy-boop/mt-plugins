@@ -1,0 +1,215 @@
+{
+  "repo": "Dammyjay93/interface-design",
+  "commit": "2f9be3206855bcb2d1d0af262c8bae25cba6658d",
+  "tree": {
+    "sha": "2f9be3206855bcb2d1d0af262c8bae25cba6658d",
+    "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/2f9be3206855bcb2d1d0af262c8bae25cba6658d",
+    "tree": [
+      {
+        "path": ".claude-plugin",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f5db0ee6d41e366406e9f71c4f3ada605f6c1cf9",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/f5db0ee6d41e366406e9f71c4f3ada605f6c1cf9"
+      },
+      {
+        "path": ".claude-plugin/marketplace.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c6840b6afaf9b1f366cf5a5f077cd8b6a93360eb",
+        "size": 1017,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/c6840b6afaf9b1f366cf5a5f077cd8b6a93360eb"
+      },
+      {
+        "path": ".claude-plugin/plugin.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "147e94787bc981372af166ed9849edf7523ae35c",
+        "size": 621,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/147e94787bc981372af166ed9849edf7523ae35c"
+      },
+      {
+        "path": ".claude",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "333172f8898ae2a50b9a80df99e99ffffc40fe10",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/333172f8898ae2a50b9a80df99e99ffffc40fe10"
+      },
+      {
+        "path": ".claude/commands",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "9f528ec7142c0181ab166f58f45301b03fdbe7e4",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/9f528ec7142c0181ab166f58f45301b03fdbe7e4"
+      },
+      {
+        "path": ".claude/commands/design-deslop.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3703666fa1e287b348d58564b7c27e3d13ba769e",
+        "size": 7519,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/3703666fa1e287b348d58564b7c27e3d13ba769e"
+      },
+      {
+        "path": ".claude/commands/design-review.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c2459d46a62f56dc91ab7a07bea584597c0c06d",
+        "size": 10867,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/6c2459d46a62f56dc91ab7a07bea584597c0c06d"
+      },
+      {
+        "path": ".claude/skills",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "cd09441126476c9a063854f1b2a373a835af9207",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/cd09441126476c9a063854f1b2a373a835af9207"
+      },
+      {
+        "path": ".claude/skills/interface-design",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "60daa768b428f42a2346c757ed9049602f5cbaa0",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/60daa768b428f42a2346c757ed9049602f5cbaa0"
+      },
+      {
+        "path": ".claude/skills/interface-design/SKILL.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "92e1df4eb5ca30923149c60f142db7ebeaaad334",
+        "size": 29614,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/92e1df4eb5ca30923149c60f142db7ebeaaad334"
+      },
+      {
+        "path": ".claude/skills/interface-design/agents",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "5728ba3d641afa511d590b500bb7c61fdf805b67",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/5728ba3d641afa511d590b500bb7c61fdf805b67"
+      },
+      {
+        "path": ".claude/skills/interface-design/agents/openai.yaml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "69138eaaf2083d18e130d6742be141491bc60275",
+        "size": 302,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/69138eaaf2083d18e130d6742be141491bc60275"
+      },
+      {
+        "path": ".githooks",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "c6deba8aacd488da15231dfa592ecbf7b866157b",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/c6deba8aacd488da15231dfa592ecbf7b866157b"
+      },
+      {
+        "path": ".githooks/pre-commit",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "9eb6467d53f5ad45ed202a1ca251e057629c2e1b",
+        "size": 542,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/9eb6467d53f5ad45ed202a1ca251e057629c2e1b"
+      },
+      {
+        "path": ".github",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "34f9aed01dfac0bac4670016162d1e63c1023c72",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/34f9aed01dfac0bac4670016162d1e63c1023c72"
+      },
+      {
+        "path": ".github/FUNDING.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6482ac5a434c3d0aa8aaa4e2a855810bbfc453d0",
+        "size": 21,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/6482ac5a434c3d0aa8aaa4e2a855810bbfc453d0"
+      },
+      {
+        "path": "LICENSE",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fe236841aef0a6abe04284f0cfcb3630e7393725",
+        "size": 1072,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/fe236841aef0a6abe04284f0cfcb3630e7393725"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c6b93b1bc98d650ad275e2be94e7ea955800ca69",
+        "size": 11262,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/c6b93b1bc98d650ad275e2be94e7ea955800ca69"
+      },
+      {
+        "path": "reference",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f43697a581770460119b59742703488fcbd45798",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/f43697a581770460119b59742703488fcbd45798"
+      },
+      {
+        "path": "reference/examples",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ff49b2f0dc8309f293686fb5c493f01d90fede6d",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/ff49b2f0dc8309f293686fb5c493f01d90fede6d"
+      },
+      {
+        "path": "reference/examples/system-precision.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cbe7b8d13034e84f61f66881854f18841dfe0e5e",
+        "size": 1191,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/cbe7b8d13034e84f61f66881854f18841dfe0e5e"
+      },
+      {
+        "path": "reference/examples/system-warmth.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c3253fab41f7b27021f596fb4a38c1416439c8cd",
+        "size": 1237,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/c3253fab41f7b27021f596fb4a38c1416439c8cd"
+      },
+      {
+        "path": "reference/system-template.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "80860d93d66fe70c3a9912d9d20efb4394782aa5",
+        "size": 1272,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/80860d93d66fe70c3a9912d9d20efb4394782aa5"
+      },
+      {
+        "path": "website",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "11d5e237e7decc98e8ff1b6770a6a45a979cbda2",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/11d5e237e7decc98e8ff1b6770a6a45a979cbda2"
+      },
+      {
+        "path": "website/.vercel",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f2c303dc7393519879301bcbaf71d0afd8b27a18",
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/trees/f2c303dc7393519879301bcbaf71d0afd8b27a18"
+      },
+      {
+        "path": "website/.vercel/README.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "525d8ce8ef25a14dd73ee1f4d65047de05ccfdfa",
+        "size": 520,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/525d8ce8ef25a14dd73ee1f4d65047de05ccfdfa"
+      },
+      {
+        "path": "website/.vercel/project.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9e011b3964041156e18d5f02b82c6103448509b6",
+        "size": 112,
+        "url": "https://api.github.com/repos/Dammyjay93/interface-design/git/blobs/9e011b3964041156e18d5f02b82c6103448509b6"
+      }
+    ],
+    "truncated": false
+  }
+}

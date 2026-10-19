@@ -1,0 +1,16 @@
+# Included by each native platform build after the DLL target is defined.
+function(dynamic_leverage_validate_dll target platform)
+  if(NOT BUILD_TESTING)
+    return()
+  endif()
+  set(check "dynamic_leverage_${platform}_dll_check")
+  add_executable(${check} "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tools/dll_check.cpp")
+  target_compile_features(${check} PRIVATE cxx_std_17)
+  target_compile_definitions(${check} PRIVATE UNICODE _UNICODE NOMINMAX WIN32_LEAN_AND_MEAN _WIN32_WINNT=0x0601)
+  target_compile_options(${check} PRIVATE /W4 /permissive- /utf-8)
+  set_target_properties(${check} PROPERTIES CXX_EXTENSIONS OFF
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  add_dependencies(${check} ${target})
+  add_test(NAME ${check} COMMAND ${check} "$<TARGET_FILE:${target}>" ${ARGN})
+  set_tests_properties(${check} PROPERTIES TIMEOUT 30 LABELS "native-dll")
+endfunction()

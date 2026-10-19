@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.21)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  project(closed_trade_allocator_core VERSION 0.1.0 LANGUAGES CXX)
+  include(CTest)
+endif()
+add_library(closedalloc_core STATIC src/core.cpp)
+target_include_directories(closedalloc_core PUBLIC include)
+target_compile_features(closedalloc_core PUBLIC cxx_std_17)
+# Keep the core and every linked adapter/test on the same static MSVC runtime.
+set_target_properties(closedalloc_core PROPERTIES CXX_EXTENSIONS OFF POSITION_INDEPENDENT_CODE ON
+  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+if(MSVC)
+  target_compile_options(closedalloc_core PRIVATE /W4 /permissive- /utf-8)
+else()
+  target_compile_options(closedalloc_core PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+if(BUILD_TESTING)
+  add_executable(closedalloc_core_tests tests/core_tests.cpp)
+  target_link_libraries(closedalloc_core_tests PRIVATE closedalloc_core)
+  set_target_properties(closedalloc_core_tests PROPERTIES
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  add_test(NAME closedalloc_core_tests COMMAND closedalloc_core_tests)
+endif()

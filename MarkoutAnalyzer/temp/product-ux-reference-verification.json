@@ -1,0 +1,101 @@
+{
+  "skill": "product-design-and-ux",
+  "commit": "fb3253335cdb1156522901ef52f9897212b2e4b5",
+  "internal_missing_references": [],
+  "unresolved_sibling_skills": [
+    "agent-evals-and-observability",
+    "agent-production-operations",
+    "ai-governance",
+    "ai-operating-economics",
+    "product-analytics-and-measurement",
+    "product-discovery",
+    "product-methodology",
+    "spec-driven-development",
+    "web-accessibility"
+  ],
+  "unresolved_reference_count": 16,
+  "unresolved_references": [
+    {
+      "file": "SKILL.md",
+      "reference": "../product-discovery/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/product-discovery/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../product-methodology/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/product-methodology/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../web-accessibility/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/web-accessibility/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../spec-driven-development/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/spec-driven-development/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../agent-evals-and-observability/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/agent-evals-and-observability/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../ai-governance/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/ai-governance/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../agent-production-operations/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/agent-production-operations/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../product-analytics-and-measurement/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/product-analytics-and-measurement/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../web-accessibility/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/web-accessibility/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../ai-operating-economics/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/ai-operating-economics/SKILL.md"
+    },
+    {
+      "file": "SKILL.md",
+      "reference": "../spec-driven-development/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/spec-driven-development/SKILL.md"
+    },
+    {
+      "file": "references/interface-contracts-and-responsive-behavior.md",
+      "reference": "../../web-accessibility/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/web-accessibility/SKILL.md"
+    },
+    {
+      "file": "references/usability-testing-and-privacy.md",
+      "reference": "../../web-accessibility/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/web-accessibility/SKILL.md"
+    },
+    {
+      "file": "references/engineering-handoff.md",
+      "reference": "../../spec-driven-development/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/spec-driven-development/SKILL.md"
+    },
+    {
+      "file": "references/boundaries-and-traceability.md",
+      "reference": "../../web-accessibility/SKILL.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/web-accessibility/SKILL.md"
+    },
+    {
+      "file": "references/source-index.md",
+      "reference": "../../web-accessibility/references/source-index.md",
+      "resolved_path": "/Users/lukeh/Documents/workspace/codex/mt-plugins/MarkoutAnalyzer/skills/web-accessibility/references/source-index.md"
+    }
+  ],
+  "core_ux_workflow": "Self-contained for information architecture, task/state/recovery models and interface contracts when scope and evidence are supplied.",
+  "cross_skill_limitations": "Formal specification handoff, deep accessibility work and conditional AI specialist workflows reference skills that were not installed."
+}

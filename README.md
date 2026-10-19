@@ -1,169 +1,97 @@
-# MT5 同服跟单插件与 Windows 管理界面
+# MT 插件开发仓库
 
-## 0.6.2 重启后新增订阅漏跟修复（2026-09-22）
+本仓库用于开发各类 MetaTrader 插件，按业务用途将每个插件放在 `plugins/<插件名>/`，再用 `mt4/`、`mt5/` 区分平台。各平台自行维护源码、配置、测试、文档和构建脚本。
 
-修复运行中加入的订阅在插件重启后仍使用上次事件序号门槛、导致新开仓被静默跳过的问题。启动时将各订阅的序号门槛同步到本次队列，保留加入时间、配置、暂停状态和旧仓归属；停机前及停机期间的仓位仍不补跟。详见 [日志分析、回归与升级说明](docs/subscription-restart-0.6.2.md)。
+| 插件 | 目录 | 当前状态 |
+| --- | --- | --- |
+| 交易跟单 | [plugins/trade-copier](plugins/trade-copier/README.md) | MT5 0.7.4；MT4 0.2.0 Dealer 执行测试源码，待 Windows / Demo 验收；跨平台路由尚未实现 |
+| 账户状态批量更新 | [plugins/account-status-updater](plugins/account-status-updater/README.md) | 已建立 MT4 / MT5 目录，尚无读取或更新实现 |
+| 平仓订单概率分配 | [plugins/closed-trade-allocator](plugins/closed-trade-allocator/README.md) | 0.1.0：独立 MT4 / MT5 Server API 源码、持久化核心及测试；复制 SL/TP、备注留空；待 Windows / Demo 验收 |
+| 动态杠杆 | [plugins/dynamic-leverage](plugins/dynamic-leverage/README.md) | 组别 / 账户多规则与 Web 管理；正在改为新仓独立保证金，旧账户调杠杆执行已停用 |
 
-## 0.6.1 最小手数记录回收与平仓调度（2026-09-22）
+## 目录结构
 
-未提交的最小手数跳过自动回收；发现源平仓后优先处理同源仓的其他订阅，繁忙账号单独等待。支持 10 个源、300 个订阅的可复现模拟压测，详见 [验证与升级说明](docs/latency-300-0.6.1.md)。本地模拟不能替代 MT5 实测或作为 1 秒成交承诺。
-
-## 0.6.0 运行中加入/退出订阅与映射故障隔离（2026-09-18）
-
-移除运行时自动全局 HALTED：异常只限制对应映射，同账户的其他映射和其他订阅继续开平仓。关系可直接加入或退出，加入只跟新仓；退出按关系归属关闭已有及随后确认的在途仓位，不影响其他关系和人工仓位。参数修改仍保留老仓冻结规则。存储失败时不新增仓位，可核实旧仓继续在内存中管理。
-
-升级必须同步替换 DLL、管理 EXE 和账本检查器，管理协议 v2 / 账本 schema 6。运行行为、退出中的不确定请求、存储降级边界、10 账户压测和部署步骤见 [0.6.0 说明](docs/live-subscriptions-0.6.0.md)。以下旧版本说明仅记录历史策略，以本版为准。
-
-## 0.5.5 日常保证金不足不阻塞其他账户（2026-09-18）
-
-明确零成交的保证金不足开仓按单结束、持久化后回收，不再永久占用待核对记录或映射容量。其他账户继续开平仓，该账户已有仓位继续平仓，恢复和配置修改不被已结束拒单记录挡住。行为、清理条件及验证见 [0.5.5 说明](docs/routine-no-money-0.5.5.md)。
-
-## 0.5.4 保证金不足拒单识别（2026-09-18）
-
-补充日志确认：50003 的 8 笔开仓因保证金不足被拒绝，旧适配器遗漏交易前拒单回报，等待 30 秒后错误进入停止流程。新增有界拒单回调通道、完整请求身份核对及落盘后证据回收；明确 10019 记录为拒单，包括该账号在内的已有仓位继续管理，不重发失败请求。部署与验证边界见 [0.5.4 说明](docs/pretrade-rejection-0.5.4.md)。
-
-## 0.5.3 成交核对异常隔离（2026-09-18）
-
-修复批量平仓过程中少数请求确认异常导致所有账号停止平仓的问题：超时、部分或不确定成交会隔离对应账号并暂停新仓，其他账号已确认仓位继续管理。保留账本故障、提交异常及重启未决请求的全局保护，不自动解除现场 HALTED 或补平历史仓位。证据、修复边界与验证见 [0.5.3 说明](docs/execution-isolation-0.5.3.md)。
-
-## 0.5.2 旧版待核对记录清理（2026-09-18）
-
-修复旧压测遗留的未提交记录阻止恢复的问题：启动时检查指定的旧版原因，只有没有任何交易请求、目标仓位及执行进度的记录才转为跳过并清理。保持当前订阅、暂停状态和请求编号，不补单，不解除 HALTED。运行页显示恢复被阻止的原因，选中映射即可查看详情。部署步骤见 [0.5.2 清理说明](docs/legacy-review-cleanup-0.5.2.md)。
-
-## 0.5.1 压测延迟修复（2026-09-18）
-
-同账号不同仓位可以并发等待成交，保留每仓位的开平仓顺序；合并请求持久化、修正清理后的轮询公平性，并使用可重放差分记录减少账本写入。新增 10 个跟单账号、每秒 30 个源开仓、共 1,000 个源仓、持仓 10 秒的真实定时模拟程序。主文件继续受 64 MiB 阈值约束，在管上限保持 10,000。新账本帧需要同步更新 DLL、管理 EXE 和检查器，不能直接降级。改动、边界及 Windows 复跑命令见 [0.5.1 调度与增量账本](docs/throughput-0.5.1.md)。
-
-## 0.5.0 多品种与后缀匹配（2026-09-17）
-
-支持 `*`、逗号和 `!` 的源品种过滤，每条订阅可自动查找目标账号可交易的同基础品种。`XAUUSDp` 可以跟到 `XAUUSD.p`；若目标同时允许两个合适候选，则报告冲突、不下单。实际目标品种写入账本，老仓部分/全部平仓及重启恢复继续使用原绑定。保留 10,000 条容量和 Windows 检查点修复；升级写入 schema 5，需要一起更新 DLL、管理 EXE 和检查器。设置、构建及验收见 [0.5.0 多品种说明](docs/symbol-routing.md)。本地测试与交叉编译通过，Windows 本机及 Demo 待验收。
-
-## 0.4.7 Windows 检查点替换修复（2026-09-17）
-
-用户的 0.4.6 Windows 本机测试在 `ActiveConfigRealJournal` 报 `journal checkpoint publish failed`。修正为持有独占锁、刷盘并关闭两个数据句柄后替换主账本，以只打开已有文件的方式重新打开，并验证文件标识及完整内容；失败附带 Windows 错误码。保留 10,000 条在管容量、带仓修改规则和全平清理。请使用新源码包重新构建，通过全部 Windows 测试后再部署，详见 [修复与重新构建](docs/windows-checkpoint-fix.md)。
-
-## 0.4.6 同时在管 10,000 条映射（2026-09-17）
-
-按需求将 4,096 条新仓准入限制提高到 10,000 条，并同步扩大新仓快照保护到 16 MiB、单快照硬上限到 32 MiB、主文件检查点阈值到 64 MiB、磁盘余量保护到 256 MiB。保留只暂停新仓、已有平仓继续、全平后清理记录的行为；减少重启重复源查询与空闲全量复制。测试、升级与性能边界见 [10,000 条容量说明](docs/ten-thousand-capacity.md)。
-
-## 0.4.5 运行账本清理与容量保护（2026-09-17）
-
-确认平仓后清理完整映射及请求，保留在管/未决/待核对状态、短期去重标记和独立递增请求编号。主文件在 32 MiB 前切换检查点，不再自动积累历史归档；映射数量、快照大小和磁盘空间不足时提前暂停新仓，已有仓位继续管理。须一起更新 DLL、管理 EXE、检查器；schema 4 写入后不可直接降级。源码包、阈值与升级步骤见 [运行账本与容量保护](docs/live-state-journal.md)。本地验证不等于 Windows / Demo 验收，不会自动补平现场遗留仓位。
-
-## 0.4.4 账本容量修复（2026-09-17）
-
-现场日志确认 0.4.3 因全量快照账本达到 256 MiB 而 HALTED，导致源仓关闭后仍有 18 笔目标仓位。0.4.4 增加默认 32 MiB 的归档轮换和完整检查点；保留冻结开仓规则、请求和去重状态，不自动重发或补平历史仓位。信息页显示停止原因。源码包、现场处理和兼容边界见 [账本轮换修复](docs/journal-rotation.md)。轮换后账本需 0.4.4 或更新版本读取；归档总占用仍会增长。
-
-当前目标：开发 **MT5 Server API C++ DLL 插件**，在 MT5 服务端执行跟单，并配套一个**独立 Windows 管理界面**配置关系、查看状态和日志。Administrator 参数列表截图仅作为配置风格参考；当前不要求把界面嵌入 Administrator，也不表示兼容截图中的第三方插件。
-
-## 已确认需求
-
-- 所有账户在同一个 MT5 Live，账户模式均为 Hedging，账户币种均为 USD。
-- 多个源账户可以跟到多个目标账户；每条 `source → follower` 关系都有独立的手数模式、参数和启用边界。
-- 只跟每条关系启用后新开的源交易，启用前已有仓位不补单。
-- 三种手数模式：源手数乘倍率、按跟单提交前查询的目标/源净值比例乘系数、每个新源交易固定手数。
-- 固定模式部分平仓以“源关闭数量 / 平仓前源剩余数量”为比例，对目标实际剩余量减仓；其他两种模式当前默认统一采用此规则。源全部平仓时关闭对应目标剩余量。
-- 不复制挂单；源挂单成交后形成的新仓按新仓规则处理。
-- 不复制或设置目标 SL/TP；源仓位因 SL/TP 实际平仓后，仍同步其平仓结果。
-- 目标对应仓位被手动全部关闭后，不再操作该仓位或补仓。手动部分关闭后记录实际余量，后续继续按比例减仓，这是当前实现假设。
-
-MT4、Manager SDK 外部跟单服务、跨平台跟单和历史订单迁移均暂缓，当前开发入口以 MT5 Server API 方案为准。
-
-## 当前交付状态
-
-按用户提供的 SDK 开发，基准为 **Server API 6182**（安装器资源版本为 5.0.0.6191）。截至 2026-09-16，0.3.0 执行器已完成 **Windows 构建、Demo 加载及 50001 → 50002 的 1:1 主要执行流程验证**，包括有持仓的正常停用/启用后继续平仓。0.5 倍及固定 0.02 手的独立批次也已确认目标开仓和全部/分批平仓。净值比例批次已确认目标开 0.05 手、依次平 0.02/0.03 手，冻结净值计算及最终关闭状态也已用用户回传的账本输出核对。其余数量取整边界、固定手数的源分笔成交归并、多对多和异常恢复等场景仍待验收。
-
-| 组件 | 当前状态 |
-| --- | --- |
-| C++17 业务核心 | 三种手数计算、部分平仓、关系图、启用边界及仓位映射状态逻辑；SDK 无关 |
-| 配置库 | 严格 JSON 校验、64 位账号、多对多关系、三种模式、完整导入导出 |
-| `TradeCopierManager.exe` 工程 | 0.4.3 源码：MT 样式界面、分账号异步跟随、带仓新增 / 修改订阅、暂停/恢复、只读核对；0.4.0 常规 Demo 流程通过，新增行为及异常场景待验收 |
-| `TradeCopierSdkProbe.dll` 工程 | 只读 Server API 6182 加载与成交事件诊断源码；不下单 |
-| `TradeCopierExecutor.dll` 工程 | 普通市价开仓、部分/全部平仓；后台 `TradeRequest`，按实际成交建映射，默认 `Armed=0` |
-| 请求账本与恢复 | 提交前持久化、API 标记核对、单执行者、重复拦截；重启核对已知映射，未决请求停止并要求恢复核对 |
-| `TradeCopierJournal` | 停用执行器后，离线检查账本映射、请求、成交量及冻结净值 |
-| Windows 与服务端验证 | 新执行器 Windows 构建及三组测试通过，Demo 6182 / server-id=1 加载成功；1:1 主要流程、正常启停恢复、0.5 倍及固定 0.02 手已有证据；净值比例快照和关闭状态已核对；单源双目标、双源同目标的独立手数与平仓票号、启用前旧仓不补跟已确认；未成交挂单撤销已有源记录及目标无交易的用户确认；更复杂关系及异常恢复待验收 |
-
-净值时点已由用户补充确认：收到源开仓成交后，在提交跟单前查询双方当前净值并冻结，分别记录源成交时间、源查询时间和目标查询时间；不宣称原子同一时点快照。配置采用 `before_follower_submission`，旧时点定义的草稿会被拒绝，避免静默改变含义。
-
-## 0.4.3 多订阅账号异步调度
-
-不同跟单账号无需逐笔等待前一账号成交，最多 32 个账号的请求可同时在途；同一账号仍一次一笔，平仓优先。合并映射 / 请求 / 确认快照，复用同轮源历史查询，并让源平仓和目标成交事件唤醒工作线程。未知结果仍停止新请求，已发送请求继续核对，重启不重发。100 账号模拟与故障测试通过，尚待 Windows MSVC / Demo 延迟实测。
-
-保留 0.4.2 的开仓规则快照与带仓修改；账本仍为 schema 3，不清空原账本。更新 DLL、管理 EXE 和账本检查器的步骤，以及性能边界见 [0.4.3 分账号调度](docs/account-pipeline.md)。
-
-## 0.4.2 带仓修改订阅
-
-修改已跟随的订阅不再要求平仓：每笔映射持久化自己的开仓规则，老仓按原账户和原规则继续管理，新仓使用新配置。支持多次修改、停用 / 删除后的老仓管理与重启恢复。先暂停新仓并等待请求确认，应用后检查，再恢复；不补跟暂停期间的旧仓。
-
-本次账本升级为 **schema 3**，必须一起更新执行器 DLL、管理 EXE 和账本检查器。保留原账本，新版自动读取旧格式；新格式写入后旧程序不能读取。构建、部署和验收步骤见 [0.4.2 开仓规则快照](docs/frozen-opening-rules.md)。本地验证通过，Windows MSVC / Demo 新行为仍待验收。
-
-## 0.4.1 有持仓时新增订阅（历史版本）
-
-新增订阅不再要求原有持仓全部平仓：暂停新仓后保留有持仓的原关系设置，即可应用新增订阅；旧仓继续管理，新关系不补跟旧仓。仍在成交确认、待核对或停止状态时会拒绝应用。执行器和账本恢复均已调整，四组本地测试通过，Windows Demo 新行为待验证。
-
-本次必须更新执行器 DLL、管理 EXE 和账本检查器，见 [0.4.1 更新步骤](docs/config-with-open-positions.md)。继续使用原账本；其中一旦产生带仓配置切换记录，0.4.0 旧程序将拒绝读取，不能直接换回旧程序或覆盖当前账本降级。
-
-## 0.4.0 管理界面升级（历史版本）
-
-新增同机管理员管道，默认关闭，通过插件 Integer `ManagementEnabled=1` 启用。可继续使用原配置和账本；新管理模式以账本中的生效配置为准，空闲时应用变更保留历史编号。**新版写入 schema 2 账本后旧程序不能读取，请先备份并按 [管理界面升级步骤](docs/management-ui.md) 操作。** 本版核心测试及 Windows EXE 交叉编译通过，本轮常规 Demo 管理流程已依据用户截图及确认验收，包含暂停/恢复不补跟、持仓暂停后继续平仓、插件重新启用保留状态、只读核对及带历史配置应用。收尾恢复 50001 → 50002 为 1:1，50003 → 50002 固定 0.02 手，保持暂停，账本版本 25，保留 2 条已关闭映射及 4 条已确认请求。0.4.0 MSVC 构建输出、独立管道运行测试及异常、并发、故障场景仍待分别验证；重连旧错误提示的源码修正已交叉编译，尚未部署到用户 Windows。
-
-## 从 Windows 测试环境开始
-
-管理 EXE 最新源码已改为 MT 风格的原生标签页和关系编辑弹窗，技术信息集中到“信息”页。常规 / 运行状态 / 信息三页的操作位置、仅更新 EXE 的构建步骤及验证边界见 [MT 界面更新说明](docs/manager-mt-ui.md)。交叉编译和四组本地测试通过，新布局尚待 Windows 实机视觉与交互验证。
-
-管理界面的“后台刷新导致按钮闪灰”和“重连后遗留旧错误提示”已在源码修复，并通过调度测试和 Windows 交叉编译；更新管理 EXE 的步骤见 [界面刷新修复](docs/manager-refresh-fix.md)。用户 Windows 上的实际交互待更新后验证。
-
-**继续真实跟单请看 [执行器 Demo 验收步骤](docs/executor-demo-validation.md)**，使用新增构建开关：
-
-```cmd
-scripts\build-windows.cmd -Executor -SdkRoot "D:\SDK\MetaTrader5"
+```text
+mt-plugins/
+├── plugins/
+│   ├── trade-copier/
+│   │   ├── shared/        # 两端共用的业务逻辑、配置和账本
+│   │   ├── mt5/           # 现有 MT5 实现，独立源码、测试、文档与构建
+│   │   ├── mt4/           # MT4 独立适配、管理器、测试与构建
+│   │   ├── scripts/       # 兼容入口，转发到 mt5/scripts
+│   │   ├── CMakeLists.txt # 跟单项目的平台聚合构建
+│   │   └── README.md
+│   ├── account-status-updater/
+│   │   ├── mt4/
+│   │   ├── mt5/
+│   │   └── README.md
+│   ├── closed-trade-allocator/
+│   │   ├── docs/          # 平仓后按盈亏概率分配的业务需求
+│   │   ├── shared/        # 独立概率核心、持久化账本及恢复测试
+│   │   ├── mt4/
+│   │   ├── mt5/
+│   │   └── README.md
+│   └── dynamic-leverage/
+│       ├── shared/        # 账户持仓分档规则、配置与同步核心
+│       ├── mt4/           # MT4 服务端适配、测试及独立构建
+│       ├── mt5/           # MT5 服务端适配、测试及独立构建
+│       ├── management/    # 本地管理 API 与 Web 界面
+│       ├── config/        # 插件参数及规则 JSON 示例
+│       ├── docs/          # Demo 验收清单
+│       └── README.md
+├── vendor/                # 本机共享 SDK，忽略提交
+├── scripts/               # 仓库级兼容入口
+├── CMakeLists.txt         # C++ 插件聚合构建
+└── README.md
 ```
 
-产物位于 `build-windows\package-executor`。执行器需要独立插件配置、实际 Demo 账号、固定账本路径和 `Armed=1` 才会工作；原探针无需删除重加。当前 `AllowedSymbol` 支持品种掩码（例如 `*`），订阅可自动匹配目标后缀；目标要求 Market Execution，优先 IOC，其次 FOK。Close By 按用户要求暂缓。
+以业务插件为一级分类，再按 MT4、MT5 分开。跟单项目的通用业务核心归入 `shared/`，平台适配、Windows 管理器、配置和构建脚本分别归入 `mt4/`、`mt5/`。跨平台服务、Java 后端及 Web 前端也归入 `plugins/trade-copier/`，在实际实现时建立相应模块。详细目录见[跟单项目说明](plugins/trade-copier/README.md)。
 
-完整步骤见 **[Windows 构建与测试服部署教程](docs/windows-test-deployment.md)**。在 VS 2022/2026 的 x64 Native Tools Command Prompt 中，位于项目根目录执行：
+SDK 统一放在仓库根目录的 `vendor/mt5-sdk`、`vendor/mt4-sdk` 等路径，由需要它们的插件通过构建参数引用。SDK、实际服务器配置和运行账本不提交到 Git。
 
-```cmd
-scripts\build-windows.cmd -SdkRoot "D:\SDK\MetaTrader5"
-```
+平仓订单概率分配有独立的 [构建与 Demo 验收说明](plugins/closed-trade-allocator/docs/windows-deployment.md)。它在源完整平仓后写入目标历史，使用独立账本和 API 标记，不依赖跟单内部模块；不处理部分平仓。
 
-把示例路径替换成实际 SDK 根目录。脚本识别当前 VS 开发者环境（2022/v143 或 2026/v145），构建 x64 Release、运行测试、检查 DLL 导出，并把产物放到 `build-windows\package-probe`；不修改 MT5 服务或安装插件。VS2026 需要 CMake 4.2+。只试界面可使用 `-UiOnly`，无需 SDK。
+## 构建与测试
 
-配置界面“保存”只写本地草稿。0.4.0 开启管理模式后，通过“读取生效配置”和“应用草稿到执行器”交互；后者须已暂停且没有在管映射或未决请求。未开启管理模式时保留原 ConfigPath/账本一致性校验。所有样例关系默认禁用。只读探针的启动不意味着跟单启用。
-
-## 本地验证
-
-已在 macOS 上以 AppleClang/C++17 编译并通过四组 CMake/CTest：计算核心、配置校验、执行状态与账本、管理客户端调度。新增测试覆盖提交前落盘、崩溃/未知结果不重发、分笔开仓、实际余量平仓、多对多隔离和并发回调队列；AddressSanitizer/UndefinedBehaviorSanitizer 检查通过。测试不替代 Windows SDK 编译及真实 MT5 执行验证。
-
-新执行器的 Windows 构建、加载证据、开平仓确认日志及旧版本构建历史，见 [Windows 构建验证记录](docs/windows-build-validation.md)。此前 Demo 观测见 [探针验收记录](docs/demo-probe-observations.md)，仅证明旧探针收到成交事件；新执行器的源/目标成交明细对照仍待核对。
-
-具备 CMake 3.21+ 和 C++17 工具链后：
+从仓库根目录构建当前可用的 C++ 插件：
 
 ```sh
-cmake -S . -B build
-cmake --build build --config Release
-ctest --test-dir build -C Release --output-on-failure --no-tests=error
+cmake -S . -B build/workspace -DCMAKE_BUILD_TYPE=Release
+cmake --build build/workspace --config Release
+ctest --test-dir build/workspace -C Release --output-on-failure --no-tests=error
 ```
 
-Windows 默认构建管理界面。SDK 探针与执行器的 CMake 选项默认关闭；执行器开关为 `TRADECOPIER_BUILD_EXECUTOR=ON`，SDK 路径为 `MT5_SERVER_SDK_DIR`。
+也可以单独构建 MT5 跟单：
 
-## 接入资料
+```sh
+cmake -S plugins/trade-copier/mt5 -B plugins/trade-copier/mt5/build -DCMAKE_BUILD_TYPE=Release
+cmake --build plugins/trade-copier/mt5/build --config Release
+ctest --test-dir plugins/trade-copier/mt5/build -C Release --output-on-failure --no-tests=error
+```
 
-- [已提供 SDK 的版本、接口与限制核对](docs/sdk-integration-notes.md)
-- [业务规格与完整验收目标](docs/mt5-live-copier.md)
-- [Server API 与独立 Windows 界面架构](docs/mt5-server-ui-architecture.md)
-- [Windows 界面使用与验收](windows/README.md)
-- [0.4.0 管理通道、升级和 Demo 验收](docs/management-ui.md)
-- [只读 SDK 探针说明](server/README.md)
-- [执行器 Demo 验收与恢复限制](docs/executor-demo-validation.md)
-- [多对多配置样例](config/copier.example.json)
+跟单项目本身也提供聚合入口：`-S plugins/trade-copier -B plugins/trade-copier/build/platforms`。仓库聚合构建可通过 `-DMT_PLUGINS_BUILD_TRADE_COPIER=OFF` 排除跟单项目；平台聚合开关为 `TRADECOPIER_BUILD_MT5`、`TRADECOPIER_BUILD_MT4`，均默认开启。SDK 探针和交易执行器默认不构建，Windows 管理器在 Windows 上默认构建。两个 DLL 需分别使用 MT5 x64、MT4 Win32 构建目录。账户状态更新目录目前不参加构建。
 
-本机重新提取的 SDK 位于 `vendor/mt5-sdk`：987 个原始文件通过 SHA256 校验，包含构建所需全部头文件和文档；16 个经过安装器指令变换的二进制未通过提取校验，因此未写入。这两个 Server API DLL 仅需要 Include，不链接这些 Libs。详情见本地 `extraction-manifest.json`。SDK、安装器、本机配置和运行状态均被 Git 忽略，源码包不包含专有 SDK。
+平仓分配核心及两个平台的数据模型测试默认加入聚合构建，可通过 `-DMT_PLUGINS_BUILD_CLOSED_TRADE_ALLOCATOR=OFF` 排除。实际 Server DLL 默认关闭，用该插件各平台脚本分别构建 MT4 Win32 与 MT5 x64，不在同一个构建目录混用两种架构。
 
-## 暂缓资料
+动态杠杆插件在 `plugins/dynamic-leverage/` 独立管理，默认加入公共规则与平台模型测试；可通过 `-DMT_PLUGINS_BUILD_DYNAMIC_LEVERAGE=OFF` 排除。其 MT4 / MT5 Server DLL 使用各自构建入口，见[动态杠杆说明](plugins/dynamic-leverage/README.md)。
 
-- [MT4 历史方案说明](docs/mt4-live-copier.md)
-- [Manager SDK 历史方案说明](docs/manager-sdk-architecture.md)
+在 Windows 的 Visual Studio x64 开发者命令行中，从仓库根目录构建、测试并打包跟单执行器：
 
-这些资料只保留之前讨论的背景，不构成当前交付承诺。
+```bat
+plugins\trade-copier\mt5\scripts\build-windows.cmd -Executor -SdkRoot "D:\SDK\MetaTrader5"
+```
+
+省略 `-SdkRoot` 时使用仓库根目录的 `vendor\mt5-sdk`。默认产物位于 `plugins\trade-copier\mt5\build-windows\package-executor`。SDK 路径也可通过 CMake 的 `-DMT5_SERVER_SDK_DIR=...` 指定。打包脚本直接构建 MT5；手动聚合构建的产物路径会包含额外的平台子目录。
+
+原来的根入口 `scripts\build-windows.*` 和 `plugins\trade-copier\scripts\build-windows.*` 保留为转发入口，参数及失败状态传给 MT5 脚本。所有脚本入口的默认构建目录及相对 `-BuildDirectory` 都以 `plugins/trade-copier/mt5` 为基准；绝对构建路径保持原义。
+
+目录迁移前的 `build/`、`build-windows/`、`out/` 和本地运行数据没有移动。CMake 缓存记录旧源码路径，请使用上述新构建目录，勿直接运行旧目录中的程序作为本次源码的验证结果。历史版本文档已归入插件目录；部署与交易行为见[跟单项目说明](plugins/trade-copier/README.md)。
+
+## 新增插件约定
+
+新插件与关键执行逻辑变更遵循 [AGENTS.md](AGENTS.md) 和 [插件开发流程](docs/plugin-development.md)：先明确业务口径与 SDK 依据，再验证关键机制、实现并分别记录本地测试和原生验收状态。可复用 [技术分析模板](docs/templates/plugin-analysis.md)；已有插件分析文档直接维护，不重复建档。
+
+1. 在 `plugins/` 下使用独立业务名称建立目录，先添加 README 说明用途、支持平台和实现状态。
+2. 插件自己的源码、配置、测试、工具和文档按平台放入 `mt4/`、`mt5/`；公共协议或管理端在实际需要时建立独立模块。
+3. C++ 插件提供独立 `CMakeLists.txt`，再通过根 CMake 的显式开关加入聚合构建；其他技术栈维护自己的构建入口。
+4. 只有已被多个插件使用的代码才提取为仓库级公共模块，避免插件直接依赖其他插件的内部目录。
